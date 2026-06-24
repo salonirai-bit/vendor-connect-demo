@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Success Agent - WhatsApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 14.2px;
+      background: #111b21;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .whatsapp-container {
+      display: flex;
+      height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+      background: #111b21;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 380px;
+      background: #111b21;
+      border-right: 1px solid #2a3942;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      background: #202c33;
+      padding: 10px 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #005c4b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d1d7db;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .sidebar-header-icons {
+      display: flex;
+      gap: 20px;
+      color: #aebac1;
+    }
+
+    .sidebar-search {
+      padding: 10px 12px;
+      background: #202c33;
+    }
+
+    .search-box {
+      background: #111b21;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box svg {
+      width: 16px;
+      height: 16px;
+      fill: #aebac1;
+    }
+
+    .search-box input {
+      border: none;
+      background: none;
+      color: #d1d7db;
+      outline: none;
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+      background: #111b21;
+    }
+
+    .chat-item {
+      padding: 12px 16px;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      background: #111b21;
+      border-bottom: 1px solid #2a3942;
+    }
+
+    .chat-item.active {
+      background: #2a3942;
+    }
+
+    .chat-item:hover {
+      background: #202c33;
+    }
+
+    .chat-item .avatar {
+      width: 49px;
+      height: 49px;
+      border-radius: 50%;
+      background: #005c4b;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d1d7db;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .chat-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .chat-item-name {
+      color: #e9edef;
+      font-weight: 400;
+      font-size: 16px;
+    }
+
+    .chat-item-time {
+      color: #667781;
+      font-size: 12px;
+    }
+
+    .chat-item-preview {
+      color: #667781;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Chat */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0b141a;
+    }
+
+    .chat-header {
+      background: #202c33;
+      padding: 10px 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 1px solid #2a3942;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-header .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #005c4b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d1d7db;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .chat-header-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header-name {
+      color: #e9edef;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .chat-header-status {
+      color: #667781;
+      font-size: 12px;
+    }
+
+    .chat-header-status.typing {
+      color: #00a884;
+    }
+
+    .chat-header-icons {
+      display: flex;
+      gap: 20px;
+      color: #aebac1;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 60px;
+      background-image:
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 20px),
+        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 20px);
+      background-color: #0b141a;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.outgoing {
+      justify-content: flex-end;
+    }
+
+    .message.incoming {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 65%;
+      padding: 6px 7px 8px 9px;
+      border-radius: 7.5px;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .message.outgoing .message-bubble {
+      background: #005c4b;
+      color: #e9edef;
+      border-top-right-radius: 0;
+    }
+
+    .message.incoming .message-bubble {
+      background: #202c33;
+      color: #e9edef;
+      border-top-left-radius: 0;
+    }
+
+    .message-text {
+      margin-bottom: 2px;
+      line-height: 19px;
+    }
+
+    .message-text strong {
+      font-weight: 700;
+    }
+
+    .message-text ul {
+      margin: 8px 0 8px 20px;
+    }
+
+    .message-text li {
+      margin: 4px 0;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      text-align: right;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+    }
+
+    .message.outgoing .message-time {
+      color: rgba(255,255,255,0.63);
+    }
+
+    .checkmarks {
+      font-size: 16px;
+      color: #53bdeb;
+    }
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      max-width: 65%;
+    }
+
+    .message.incoming + .quick-replies {
+      margin-bottom: 12px;
+    }
+
+    .quick-reply-btn {
+      padding: 8px 16px;
+      border: 1px solid #3b4a54;
+      border-radius: 18px;
+      background: transparent;
+      color: #00a884;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+
+    .quick-reply-btn:hover {
+      background: #2a3942;
+    }
+
+    /* Composer */
+    .chat-composer {
+      background: #202c33;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .composer-icon {
+      color: #aebac1;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .composer-icon:hover {
+      color: #d1d7db;
+    }
+
+    .composer-input {
+      flex: 1;
+      background: #2a3942;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #e9edef;
+      font-size: 14.2px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      max-height: 100px;
+    }
+
+    .composer-input::placeholder {
+      color: #667781;
+    }
+
+    .send-btn {
+      background: #00a884;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #111b21;
+    }
+
+    .send-btn:hover {
+      background: #05a884;
+    }
+
+    .send-btn:disabled {
+      background: #2a3942;
+      color: #667781;
+      cursor: not-allowed;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #374045;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4c5660;
+    }
+
+    /* Icons */
+    .icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .icon:hover {
+      opacity: 0.7;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #667781;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    /* OAuth Overlay */
+    .oauth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+    .oauth-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .oauth-modal {
+      background: #111b21;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 90vw;
+      overflow: hidden;
+      border: 1px solid #2a3942;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .oauth-browser-chrome {
+      background: #202c33;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #2a3942;
+    }
+
+    .oauth-url-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #111b21;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #8696a0;
+      flex: 1;
+      margin-right: 12px;
+    }
+
+    .oauth-close {
+      background: none;
+      border: none;
+      color: #8696a0;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .oauth-close:hover { background: rgba(255,255,255,0.1); }
+
+    .oauth-body {
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .oauth-logo {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .oauth-title {
+      color: #e9edef;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .oauth-desc {
+      color: #8696a0;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .oauth-perms {
+      text-align: left;
+      margin: 0 auto 24px;
+      max-width: 280px;
+      color: #aebac1;
+      font-size: 13px;
+      list-style: none;
+      padding: 0;
+    }
+
+    .oauth-perms li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .oauth-perms li::before {
+      content: '•';
+      position: absolute;
+      left: 6px;
+      color: #00a884;
+    }
+
+    .oauth-allow {
+      background: #00a884;
+      color: #111b21;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .oauth-allow:hover { background: #00c49a; }
+    .oauth-allow:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .oauth-cancel {
+      background: transparent;
+      color: #8696a0;
+      border: none;
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .oauth-cancel:hover { color: #e9edef; }
+  </style>
+</head>
+<body>
+  <div class="whatsapp-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="avatar">ME</div>
+        <div class="sidebar-header-icons">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="sidebar-search">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <input type="text" placeholder="Search or start new chat">
+        </div>
+      </div>
+
+      <div class="chat-list">
+        <div class="chat-item active">
+          <div class="avatar">PA</div>
+          <div class="chat-item-content">
+            <div class="chat-item-header">
+              <div class="chat-item-name">Partner Success Agent</div>
+              <div class="chat-item-time">now</div>
+            </div>
+            <div class="chat-item-preview">Type a message to start</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="avatar">PA</div>
+          <div class="chat-header-info">
+            <div class="chat-header-name">Partner Success Agent</div>
+            <div class="chat-header-status" id="status">online</div>
+          </div>
+        </div>
+        <div class="chat-header-icons">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="messages">
+        <!-- Messages will be added here dynamically -->
+      </div>
+
+      <div class="chat-composer">
+        <div class="composer-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+          </svg>
+        </div>
+        <div class="composer-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+          </svg>
+        </div>
+        <textarea
+          class="composer-input"
+          id="messageInput"
+          placeholder="Type a message"
+          rows="1"
+        ></textarea>
+        <button class="send-btn" id="sendBtn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="oauth-overlay" class="oauth-overlay hidden">
+    <div class="oauth-modal">
+      <div class="oauth-browser-chrome">
+        <div class="oauth-url-bar">
+          <span class="oauth-lock">🔒</span>
+          <span class="oauth-url" id="oauth-url">login.salesforce.com/oauth/authorize</span>
+        </div>
+        <button class="oauth-close" onclick="cancelOAuth()">✕</button>
+      </div>
+      <div class="oauth-body">
+        <div class="oauth-logo" id="oauth-logo">☁️</div>
+        <h2 class="oauth-title">Authorize Partner Success Agent</h2>
+        <p class="oauth-desc">This app will be able to:</p>
+        <ul class="oauth-perms">
+          <li>Read your deals and opportunities</li>
+          <li>Sync records between CRMs</li>
+          <li>View your pipeline data</li>
+        </ul>
+        <button class="oauth-allow" id="oauth-allow-btn" onclick="authorizeOAuth()">Allow Access</button>
+        <button class="oauth-cancel" onclick="cancelOAuth()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const OPPORTUNITIES = [
+      { id: 1, name: 'Acme Corp Expansion', account: 'Daimler AG', amount: 450000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-15' },
+      { id: 2, name: 'TechVentures Migration', account: 'Daimler AG', amount: 120000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-07-30' },
+      { id: 3, name: 'Global Supply Chain Overhaul', account: 'Daimler AG', amount: 890000, stage: 'Approved', source: 'dynamics', closeDate: '2026-08-10' },
+      { id: 4, name: 'BMW Connected Fleet', account: 'BMW India', amount: 670000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-22' },
+      { id: 5, name: 'Electric Vehicle Data Hub', account: 'BMW India', amount: 340000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-05' },
+      { id: 6, name: 'Dealer Portal Modernization', account: 'BMW India', amount: 210000, stage: 'Pending Approval', source: 'dynamics', closeDate: '2026-08-18' },
+      { id: 7, name: 'Service Center Automation', account: 'Landmark Cars', amount: 280000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-28' },
+      { id: 8, name: 'Customer Loyalty Platform', account: 'Landmark Cars', amount: 190000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-12' },
+      { id: 9, name: 'Inventory Management System', account: 'Landmark Cars', amount: 310000, stage: 'Approved', source: 'dynamics', closeDate: '2026-08-20' },
+      { id: 10, name: 'Smart Showroom Experience', account: 'Landmark Cars', amount: 425000, stage: 'Pending Approval', source: 'salesforce', closeDate: '2026-09-01' },
+      { id: 11, name: 'Regional Hub Integration', account: 'Daimler AG', amount: 560000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-18' },
+      { id: 12, name: 'Manufacturing Analytics Suite', account: 'Daimler AG', amount: 720000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-08' },
+      { id: 13, name: 'Financial Services Platform', account: 'BMW India', amount: 480000, stage: 'Approved', source: 'dynamics', closeDate: '2026-07-25' },
+      { id: 14, name: 'Mobile App Ecosystem', account: 'BMW India', amount: 290000, stage: 'Pending Approval', source: 'salesforce', closeDate: '2026-08-15' },
+      { id: 15, name: 'Warranty Management Revamp', account: 'Landmark Cars', amount: 175000, stage: 'Approved', source: 'hubspot', closeDate: '2026-08-22' },
+      { id: 16, name: 'Sales Force Automation', account: 'Daimler AG', amount: 395000, stage: 'Under Review', source: 'dynamics', closeDate: '2026-09-05' },
+      { id: 17, name: 'After-Sales Excellence Program', account: 'BMW India', amount: 225000, stage: 'Approved', source: 'salesforce', closeDate: '2026-08-28' },
+      { id: 18, name: 'Parts Distribution Deal', account: 'Landmark Cars', amount: 145000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-25' }
+    ];
+
+    const messagesContainer = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusEl = document.getElementById('status');
+
+    let conversationState = 'setup-welcome';
+    let selectedDeal = null;
+    let browsingMode = false;
+    let selectedOpportunities = [];
+    let setupData = {
+      selectedCRMs: [],
+      currentCRMIndex: 0,
+      userName: '',
+      userRole: ''
+    };
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function formatTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function addMessage(text, type = 'incoming', showTime = true) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'message-text';
+      textDiv.innerHTML = text;
+
+      bubbleDiv.appendChild(textDiv);
+
+      if (showTime) {
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = formatTime();
+        if (type === 'outgoing') {
+          timeDiv.innerHTML += ' <span class="checkmarks">✓✓</span>';
+        }
+        bubbleDiv.appendChild(timeDiv);
+      }
+
+      messageDiv.appendChild(bubbleDiv);
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function addQuickReplies(options) {
+      const repliesDiv = document.createElement('div');
+      repliesDiv.className = 'quick-replies';
+
+      options.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'quick-reply-btn';
+        btn.textContent = option.label;
+        btn.onclick = () => {
+          handleQuickReply(option.value);
+          repliesDiv.remove();
+        };
+        repliesDiv.appendChild(btn);
+      });
+
+      messagesContainer.appendChild(repliesDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function showTyping() {
+      statusEl.textContent = 'typing...';
+      statusEl.classList.add('typing');
+    }
+
+    function hideTyping() {
+      statusEl.textContent = 'online';
+      statusEl.classList.remove('typing');
+    }
+
+    async function simulateTyping(duration = 1500) {
+      showTyping();
+      await new Promise(resolve => setTimeout(resolve, duration));
+      hideTyping();
+    }
+
+    async function handleUserMessage(message) {
+      addMessage(message, 'outgoing');
+      messageInput.value = '';
+
+      const lowerMsg = message.toLowerCase().trim();
+
+      // Handle skip/later at any setup state
+      if ((conversationState === 'setup-welcome' ||
+           conversationState === 'setup-crm-select' ||
+           conversationState === 'setup-oauth' ||
+           conversationState === 'setup-profile') &&
+          (lowerMsg === 'skip' || lowerMsg === 'later')) {
+        await simulateTyping(800);
+        addMessage("No problem! You can set up CRM connections anytime. What would you like to do?");
+        addQuickReplies([
+          { label: '📊 Recent deal', value: 'recent' },
+          { label: '🏢 Partner deals', value: 'partners' },
+          { label: '🔄 Sync status', value: 'sync' }
+        ]);
+        conversationState = 'menu';
+        return;
+      }
+
+      if (conversationState === 'setup-welcome') {
+        await simulateTyping(1500);
+        addMessage(
+          "Welcome! I'm the <strong>Partner Success Agent</strong> by Salesforce. I help you manage deals across your CRMs right here in WhatsApp.<br><br>" +
+          "Let's get you set up — it takes about 2 minutes. Which CRMs do you use?"
+        );
+        addQuickReplies([
+          { label: 'Salesforce', value: 'crm-salesforce' },
+          { label: 'HubSpot', value: 'crm-hubspot' },
+          { label: 'Both + more', value: 'crm-both' }
+        ]);
+        conversationState = 'setup-crm-select';
+      } else if (conversationState === 'setup-profile') {
+        // Extract name and role from message
+        const parts = message.split(',').map(p => p.trim());
+        if (parts.length >= 2) {
+          setupData.userName = parts[0];
+          setupData.userRole = parts.slice(1).join(', ');
+        } else {
+          setupData.userName = message;
+          setupData.userRole = 'Partner';
+        }
+
+        await simulateTyping(1200);
+        const connectedCRMs = setupData.selectedCRMs.map(crm => `✅ ${crm}`).join(', ');
+        addMessage(
+          `Nice to meet you, ${setupData.userName}! You're all set as ${setupData.userRole}.<br><br>` +
+          `I'm connected to: ${connectedCRMs}<br><br>` +
+          "What would you like to do?"
+        );
+        addQuickReplies([
+          { label: '📊 Recent deal', value: 'recent' },
+          { label: '🏢 Partner deals', value: 'partners' },
+          { label: '🔄 Sync status', value: 'sync' }
+        ]);
+        conversationState = 'menu';
+      } else if (conversationState === 'awaiting_crm_choice') {
+        if (lowerMsg === '1' || lowerMsg.includes('salesforce')) {
+          await handleMoveToCRM('salesforce');
+        } else if (lowerMsg === '2' || lowerMsg.includes('hubspot')) {
+          await handleMoveToCRM('hubspot');
+        } else if (lowerMsg === '3' || lowerMsg.includes('dynamics')) {
+          await handleMoveToCRM('dynamics');
+        } else {
+          await simulateTyping(800);
+          addMessage("Please reply with 1, 2, or 3 to select a CRM.");
+        }
+      } else if (conversationState === 'awaiting_move_confirmation') {
+        if (lowerMsg.includes('yes') || lowerMsg.includes('confirm')) {
+          await confirmMove();
+        } else {
+          await simulateTyping(800);
+          addMessage("Move cancelled. What else can I help with?");
+          addQuickReplies([
+            { label: '📊 Recent deal', value: 'recent' },
+            { label: '🏢 Partner deals', value: 'partners' },
+            { label: '🔄 Sync status', value: 'sync' }
+          ]);
+          conversationState = 'menu';
+        }
+      } else if (browsingMode) {
+        await handleBrowseSelection(message);
+      } else {
+        await simulateTyping(800);
+        addMessage("I didn't understand that. Let me know what you'd like to do:");
+        addQuickReplies([
+          { label: '📊 Recent deal', value: 'recent' },
+          { label: '🏢 Partner deals', value: 'partners' },
+          { label: '🔄 Sync status', value: 'sync' }
+        ]);
+        conversationState = 'menu';
+      }
+    }
+
+    async function handleQuickReply(value) {
+      if (value === 'crm-salesforce') {
+        setupData.selectedCRMs = ['Salesforce'];
+        await showConnectCRM('Salesforce');
+      } else if (value === 'crm-hubspot') {
+        setupData.selectedCRMs = ['HubSpot'];
+        await showConnectCRM('HubSpot');
+      } else if (value === 'crm-both') {
+        setupData.selectedCRMs = ['Salesforce', 'HubSpot', 'Copper'];
+        await showConnectCRM('Salesforce');
+      } else if (value.startsWith('connect-')) {
+        const crm = value.replace('connect-', '');
+        await showOAuthOverlay(crm);
+      } else if (value === 'recent') {
+        await showRecentDeal();
+      } else if (value === 'partners') {
+        await showPartnerDeals();
+      } else if (value === 'sync') {
+        await showSyncStatus();
+      } else if (value === 'move') {
+        await showMoveToCRM();
+      } else if (value === 'browse') {
+        await showBrowseOpportunities();
+      } else if (value === 'back') {
+        await simulateTyping(500);
+        addMessage("What would you like to do?");
+        addQuickReplies([
+          { label: '📊 Recent deal', value: 'recent' },
+          { label: '🏢 Partner deals', value: 'partners' },
+          { label: '🔄 Sync status', value: 'sync' }
+        ]);
+        conversationState = 'menu';
+      }
+    }
+
+    async function showConnectCRM(crm) {
+      await simulateTyping(800);
+      addMessage(`Tap below to connect ${crm}:`);
+      addQuickReplies([
+        { label: `Connect ${crm}`, value: `connect-${crm}` }
+      ]);
+      conversationState = 'setup-oauth';
+    }
+
+    async function showOAuthOverlay(crm) {
+      const overlay = document.getElementById('oauth-overlay');
+      const urlEl = document.getElementById('oauth-url');
+      const logoEl = document.getElementById('oauth-logo');
+
+      // Update URL and logo based on CRM
+      if (crm === 'Salesforce') {
+        urlEl.textContent = 'login.salesforce.com/oauth/authorize';
+        logoEl.textContent = '☁️';
+      } else if (crm === 'HubSpot') {
+        urlEl.textContent = 'app.hubspot.com/oauth/authorize';
+        logoEl.textContent = '🧡';
+      } else if (crm === 'Copper') {
+        urlEl.textContent = 'app.copper.com/oauth/authorize';
+        logoEl.textContent = '🔶';
+      }
+
+      overlay.classList.remove('hidden');
+      // Store current CRM for OAuth completion
+      window.currentOAuthCRM = crm;
+    }
+
+    function cancelOAuth() {
+      const overlay = document.getElementById('oauth-overlay');
+      overlay.classList.add('hidden');
+
+      setTimeout(async () => {
+        await simulateTyping(800);
+        addMessage("No problem, you can connect later.");
+        await handleOAuthCompletion(true);
+      }, 300);
+    }
+
+    async function authorizeOAuth() {
+      const overlay = document.getElementById('oauth-overlay');
+      const allowBtn = document.getElementById('oauth-allow-btn');
+
+      allowBtn.disabled = true;
+      allowBtn.textContent = 'Authorizing...';
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      overlay.classList.add('hidden');
+      allowBtn.disabled = false;
+      allowBtn.textContent = 'Allow Access';
+
+      await handleOAuthCompletion(false);
+    }
+
+    async function handleOAuthCompletion(cancelled) {
+      const currentCRM = window.currentOAuthCRM;
+
+      if (!cancelled) {
+        await simulateTyping(1200);
+        addMessage(`✅ ${currentCRM} connected successfully!`);
+      }
+
+      setupData.currentCRMIndex++;
+
+      // Check if there are more CRMs to connect
+      if (setupData.currentCRMIndex < setupData.selectedCRMs.length) {
+        const nextCRM = setupData.selectedCRMs[setupData.currentCRMIndex];
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await showConnectCRM(nextCRM);
+      } else {
+        // All CRMs connected, move to profile setup
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await simulateTyping(1000);
+        addMessage(
+          "All CRMs connected! 🎉<br><br>" +
+          "Now, what's your name and role?<br>" +
+          "(e.g., 'Alex, Sales Manager')"
+        );
+        conversationState = 'setup-profile';
+      }
+    }
+
+    async function showRecentDeal() {
+      await simulateTyping(1200);
+      selectedDeal = OPPORTUNITIES[0];
+      const deal = selectedDeal;
+
+      addMessage(
+        `<strong>Deal: ${deal.name}</strong><br>` +
+        `<strong>Account:</strong> ${deal.account}<br>` +
+        `<strong>Amount:</strong> ${formatCurrency(deal.amount)}<br>` +
+        `<strong>Stage:</strong> ${deal.stage}<br>` +
+        `<strong>Source:</strong> ${deal.source.toUpperCase()}<br>` +
+        `<strong>Close Date:</strong> ${new Date(deal.closeDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      );
+
+      addQuickReplies([
+        { label: '✏️ Move to CRM', value: 'move' },
+        { label: '🔍 Browse opportunities', value: 'browse' },
+        { label: '⬅️ Back', value: 'back' }
+      ]);
+      conversationState = 'deal_shown';
+    }
+
+    async function showPartnerDeals() {
+      await simulateTyping(1500);
+
+      const byAccount = {};
+      OPPORTUNITIES.forEach(opp => {
+        if (!byAccount[opp.account]) byAccount[opp.account] = [];
+        byAccount[opp.account].push(opp);
+      });
+
+      let text = '<strong>Partner Deals Summary</strong><br><br>';
+      for (const [account, deals] of Object.entries(byAccount)) {
+        const total = deals.reduce((sum, d) => sum + d.amount, 0);
+        text += `<strong>${account}</strong><br>`;
+        text += `${deals.length} opportunities • ${formatCurrency(total)}<br><br>`;
+      }
+
+      addMessage(text);
+      addQuickReplies([
+        { label: '🔍 Browse all', value: 'browse' },
+        { label: '⬅️ Back', value: 'back' }
+      ]);
+      conversationState = 'menu';
+    }
+
+    async function showSyncStatus() {
+      await simulateTyping(1200);
+
+      const salesforceCount = OPPORTUNITIES.filter(o => o.source === 'salesforce').length;
+      const hubspotCount = OPPORTUNITIES.filter(o => o.source === 'hubspot').length;
+      const dynamicsCount = OPPORTUNITIES.filter(o => o.source === 'dynamics').length;
+
+      addMessage(
+        '<strong>CRM Sync Status</strong><br><br>' +
+        `✅ <strong>Salesforce:</strong> ${salesforceCount} opportunities synced<br>` +
+        `✅ <strong>HubSpot:</strong> ${hubspotCount} opportunities synced<br>` +
+        `✅ <strong>Dynamics 365:</strong> ${dynamicsCount} opportunities synced<br><br>` +
+        'Last sync: Just now<br>' +
+        'Next sync: In 5 minutes'
+      );
+
+      addQuickReplies([
+        { label: '🔍 Browse all', value: 'browse' },
+        { label: '⬅️ Back', value: 'back' }
+      ]);
+      conversationState = 'menu';
+    }
+
+    async function showMoveToCRM() {
+      await simulateTyping(1000);
+      addMessage(
+        'Select destination CRM:<br><br>' +
+        '<strong>1.</strong> Salesforce<br>' +
+        '<strong>2.</strong> HubSpot<br>' +
+        '<strong>3.</strong> Dynamics 365<br><br>' +
+        'Reply with the number of your choice.'
+      );
+      conversationState = 'awaiting_crm_choice';
+    }
+
+    async function handleMoveToCRM(crm) {
+      await simulateTyping(800);
+      addMessage(
+        `Move <strong>${selectedDeal.name}</strong> to <strong>${crm.toUpperCase()}</strong>?<br><br>` +
+        'Reply "yes" to confirm or anything else to cancel.'
+      );
+      conversationState = 'awaiting_move_confirmation';
+      selectedDeal.targetCRM = crm;
+    }
+
+    async function confirmMove() {
+      await simulateTyping(1500);
+      addMessage(
+        `✅ <strong>Success!</strong><br><br>` +
+        `${selectedDeal.name} has been moved to ${selectedDeal.targetCRM.toUpperCase()}.`
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+      addMessage("What else can I help with?");
+      addQuickReplies([
+        { label: '📊 Recent deal', value: 'recent' },
+        { label: '🏢 Partner deals', value: 'partners' },
+        { label: '🔄 Sync status', value: 'sync' }
+      ]);
+      conversationState = 'menu';
+    }
+
+    async function showBrowseOpportunities() {
+      await simulateTyping(1500);
+      browsingMode = true;
+
+      let text = '<strong>All Opportunities</strong><br><br>';
+      OPPORTUNITIES.forEach((opp, idx) => {
+        text += `<strong>${idx + 1}.</strong> ${opp.name}<br>`;
+        text += `${opp.account} • ${formatCurrency(opp.amount)} • ${opp.source.toUpperCase()}<br><br>`;
+      });
+      text += 'Reply with numbers (e.g., "1, 5, 12") to select deals, or "done" to finish.';
+
+      addMessage(text);
+      conversationState = 'browsing';
+    }
+
+    async function handleBrowseSelection(message) {
+      const lowerMsg = message.toLowerCase().trim();
+
+      if (lowerMsg === 'done' || lowerMsg === 'finish') {
+        if (selectedOpportunities.length > 0) {
+          await simulateTyping(1000);
+          const total = selectedOpportunities.reduce((sum, opp) => sum + opp.amount, 0);
+          addMessage(
+            `✅ <strong>Selected ${selectedOpportunities.length} opportunities</strong><br><br>` +
+            `Total value: ${formatCurrency(total)}`
+          );
+        } else {
+          await simulateTyping(800);
+          addMessage("No opportunities selected.");
+        }
+        browsingMode = false;
+        selectedOpportunities = [];
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+        addMessage("What else can I help with?");
+        addQuickReplies([
+          { label: '📊 Recent deal', value: 'recent' },
+          { label: '🏢 Partner deals', value: 'partners' },
+          { label: '🔄 Sync status', value: 'sync' }
+        ]);
+        conversationState = 'menu';
+      } else {
+        const numbers = message.match(/\d+/g);
+        if (numbers) {
+          const indices = numbers.map(n => parseInt(n) - 1).filter(i => i >= 0 && i < OPPORTUNITIES.length);
+          indices.forEach(i => {
+            if (!selectedOpportunities.find(o => o.id === OPPORTUNITIES[i].id)) {
+              selectedOpportunities.push(OPPORTUNITIES[i]);
+            }
+          });
+
+          await simulateTyping(800);
+          addMessage(
+            `✓ Added ${indices.length} deal(s)<br>` +
+            `Total selected: ${selectedOpportunities.length}<br><br>` +
+            'Select more or reply "done" to finish.'
+          );
+        } else {
+          await simulateTyping(800);
+          addMessage('Please reply with numbers (e.g., "1, 3, 7") or "done".');
+        }
+      }
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', () => {
+      const message = messageInput.value.trim();
+      if (message) {
+        handleUserMessage(message);
+      }
+    });
+
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+          handleUserMessage(message);
+        }
+      }
+    });
+
+    messageInput.addEventListener('input', (e) => {
+      e.target.style.height = 'auto';
+      e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
+    });
+
+    // Auto-focus input
+    messageInput.focus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partner Success Agent — Multi CRM</title>
+  <link rel="icon" href="favicon.svg" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #1a1d21;
+      --bg-secondary: #222529;
+      --bg-card: #26292d;
+      --bg-card-hover: #2c2f33;
+      --border-subtle: #35373b;
+      --border-card: #3a3c40;
+
+      --text-primary: #d1d2d3;
+      --text-secondary: #ababad;
+      --text-tertiary: #797c80;
+      --text-link: #1d9bd1;
+
+      --crm-salesforce: #0d9dda;
+      --crm-salesforce-bg: rgba(13,157,218,0.12);
+      --crm-hubspot: #ff7a59;
+      --crm-hubspot-bg: rgba(255,122,89,0.12);
+      --crm-copper: #f4a261;
+      --crm-copper-bg: rgba(244,162,97,0.12);
+
+      --status-success: #2bac76;
+      --status-success-bg: rgba(43,172,118,0.12);
+      --status-error: #e8596d;
+      --status-error-bg: rgba(232,89,109,0.12);
+      --status-warning: #e8a820;
+      --status-warning-bg: rgba(232,168,32,0.12);
+
+      --btn-primary-bg: #007a5a;
+      --btn-primary-hover: #148567;
+
+      --space-025: 4px;
+      --space-050: 8px;
+      --space-075: 12px;
+      --space-100: 16px;
+      --space-150: 24px;
+      --space-200: 32px;
+
+      --font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-micro: 11px;
+      --font-size-small: 12px;
+      --font-size-base: 13px;
+      --font-size-medium: 14px;
+      --font-size-large: 15px;
+      --font-size-headline: 18px;
+
+      --radius-small: 4px;
+      --radius-base: 8px;
+      --radius-large: 12px;
+      --radius-rounded: 999px;
+    }
+
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-size-large);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.46;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── App Shell ────────────────────────────────────────────────── */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* ─── Channel Header ───────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-075);
+      padding: var(--space-075) var(--space-100);
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+
+    .header-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-small);
+      background: linear-gradient(135deg, #2d7ff9 0%, #18bfff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+    }
+
+    .header-title {
+      font-size: var(--font-size-large);
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-050);
+    }
+
+    .header-badge {
+      font-size: var(--font-size-micro);
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .header-subtitle {
+      font-size: var(--font-size-small);
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Platform Toggle ──────────────────────────────────────────── */
+    .platform-toggle {
+      display: flex;
+      gap: 2px;
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-rounded);
+      padding: 2px;
+      flex-shrink: 0;
+    }
+
+    .platform-btn {
+      font-family: var(--font-family);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--text-tertiary);
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-rounded);
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .platform-btn:hover {
+      color: var(--text-secondary);
+    }
+
+    .platform-btn.active {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    /* ─── Message Feed ─────────────────────────────────────────────── */
+    .feed {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-100) 0;
+      scroll-behavior: smooth;
+    }
+
+    .feed::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .feed::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+    }
+
+    /* ─── Message Containers ───────────────────────────────────────── */
+    .message {
+      display: flex;
+      gap: var(--space-050);
+      padding: var(--space-050) var(--space-100);
+      transition: background 0.1s;
+    }
+
+    .message:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-small);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .message-avatar.agent {
+      background: linear-gradient(135deg, #2d7ff9 0%, #18bfff 100%);
+    }
+
+    .message-avatar.user {
+      background: linear-gradient(135deg, #e8596d 0%, #f4a261 100%);
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .message-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-050);
+      margin-bottom: 2px;
+    }
+
+    .message-author {
+      font-size: var(--font-size-large);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .message-author-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(45,127,249,0.15);
+      color: #5b9cf6;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .message-time {
+      font-size: var(--font-size-small);
+      color: var(--text-tertiary);
+    }
+
+    .message-text {
+      font-size: var(--font-size-large);
+      color: var(--text-primary);
+      line-height: 1.46;
+    }
+
+    /* ─── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-base);
+      margin-top: var(--space-050);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-075) var(--space-100);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-header-title {
+      font-size: var(--font-size-medium);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-050);
+    }
+
+    .card-body {
+      padding: var(--space-075) var(--space-100);
+    }
+
+    .card-section {
+      padding: var(--space-075) var(--space-100);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .card-section:first-child {
+      border-top: none;
+    }
+
+    .card-section-title {
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.3px;
+      margin-bottom: var(--space-050);
+    }
+
+    /* ─── CRM Source Tags ──────────────────────────────────────────── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-rounded);
+    }
+
+    .tag-salesforce {
+      background: var(--crm-salesforce-bg);
+      color: var(--crm-salesforce);
+    }
+
+    .tag-hubspot {
+      background: var(--crm-hubspot-bg);
+      color: var(--crm-hubspot);
+    }
+
+    .tag-copper {
+      background: var(--crm-copper-bg);
+      color: var(--crm-copper);
+    }
+
+    .tag-success {
+      background: var(--status-success-bg);
+      color: var(--status-success);
+    }
+
+    .tag-error {
+      background: var(--status-error-bg);
+      color: var(--status-error);
+    }
+
+    .tag-warning {
+      background: var(--status-warning-bg);
+      color: var(--status-warning);
+    }
+
+    /* ─── Fields Grid ──────────────────────────────────────────────── */
+    .fields {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3px var(--space-100);
+    }
+
+    .field-label {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .field-value {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+    }
+
+    /* ─── Bullet List ──────────────────────────────────────────────── */
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .bullet-list li {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      padding: 2px 0;
+      padding-left: var(--space-100);
+      position: relative;
+    }
+
+    .bullet-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: 4px;
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Suggested Prompts ────────────────────────────────────────── */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-050);
+      margin-top: var(--space-075);
+    }
+
+    .suggestion-btn {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      color: var(--text-link);
+      background: transparent;
+      border: 1px solid rgba(29,155,209,0.3);
+      border-radius: var(--radius-rounded);
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .suggestion-btn:hover {
+      background: rgba(29,155,209,0.08);
+      border-color: rgba(29,155,209,0.5);
+    }
+
+    .suggestion-btn:active {
+      transform: scale(0.97);
+    }
+
+    .suggestion-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ─── Action Buttons (primary/secondary) ───────────────────────── */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-050);
+      margin-top: var(--space-075);
+    }
+
+    .action-btn {
+      font-family: var(--font-family);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-small);
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .action-btn-primary {
+      background: var(--btn-primary-bg);
+      color: white;
+    }
+
+    .action-btn-primary:hover:not(:disabled) {
+      background: var(--btn-primary-hover);
+    }
+
+    .action-btn-secondary {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+      border: 1px solid var(--border-card);
+    }
+
+    .action-btn-secondary:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .action-btn-danger {
+      background: transparent;
+      color: var(--status-error);
+    }
+
+    .action-btn-danger:hover:not(:disabled) {
+      background: var(--status-error-bg);
+    }
+
+    /* ─── Selectable Table ─────────────────────────────────────────── */
+    .opp-table {
+      width: 100%;
+      margin-top: var(--space-050);
+    }
+
+    .opp-table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-050) 0;
+      margin-bottom: var(--space-025);
+    }
+
+    .opp-table-title {
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .opp-table-page {
+      font-size: var(--font-size-small);
+      color: var(--text-tertiary);
+    }
+
+    .opp-row {
+      display: grid;
+      grid-template-columns: 28px 24px 1fr auto auto auto;
+      gap: var(--space-050);
+      align-items: center;
+      padding: var(--space-050) var(--space-050);
+      border-radius: var(--radius-small);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .opp-row:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .opp-row.selected {
+      background: rgba(29,155,209,0.08);
+    }
+
+    .opp-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-card);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .opp-row.selected .opp-checkbox {
+      background: var(--text-link);
+      border-color: var(--text-link);
+      color: white;
+    }
+
+    .opp-num {
+      font-size: var(--font-size-small);
+      color: var(--text-tertiary);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .opp-name {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .opp-amount {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .opp-stage {
+      font-size: var(--font-size-small);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .opp-source-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .opp-source-dot.salesforce { background: var(--crm-salesforce); }
+    .opp-source-dot.hubspot { background: var(--crm-hubspot); }
+    .opp-source-dot.copper { background: var(--crm-copper); }
+
+    /* ─── Selection Summary ────────────────────────────────────────── */
+    .selection-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-050) var(--space-075);
+      margin-top: var(--space-050);
+      background: rgba(29,155,209,0.06);
+      border: 1px solid rgba(29,155,209,0.2);
+      border-radius: var(--radius-small);
+    }
+
+    .selection-count {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--text-link);
+    }
+
+    /* ─── Pagination ───────────────────────────────────────────────── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-075);
+      margin-top: var(--space-075);
+    }
+
+    .page-btn {
+      font-family: var(--font-family);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--text-link);
+      background: transparent;
+      border: 1px solid rgba(29,155,209,0.3);
+      border-radius: var(--radius-small);
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: rgba(29,155,209,0.08);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: var(--font-size-small);
+      color: var(--text-tertiary);
+    }
+
+    /* ─── Filter Chips ─────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-050);
+      margin-top: var(--space-050);
+      margin-bottom: var(--space-050);
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-rounded);
+      padding: 3px 10px;
+    }
+
+    .filter-chip-remove {
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-tertiary);
+      line-height: 1;
+    }
+
+    .filter-chip-remove:hover {
+      color: var(--status-error);
+    }
+
+    /* ─── Typing Indicator ─────────────────────────────────────────── */
+    .typing-indicator {
+      display: flex;
+      gap: var(--space-050);
+      padding: var(--space-050) var(--space-100);
+      align-items: center;
+    }
+
+    .typing-indicator .message-avatar {
+      width: 36px;
+      height: 36px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-base);
+    }
+
+    .typing-dots span {
+      width: 7px;
+      height: 7px;
+      background: var(--text-tertiary);
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* ─── Composer ─────────────────────────────────────────────────── */
+    .composer {
+      flex-shrink: 0;
+      padding: var(--space-075) var(--space-100);
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+
+    .composer-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-050);
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-base);
+      padding: var(--space-050) var(--space-075);
+    }
+
+    .composer-input {
+      flex: 1;
+      font-family: var(--font-family);
+      font-size: var(--font-size-large);
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 4px 0;
+    }
+
+    .composer-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .composer-send {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-small);
+      background: var(--btn-primary-bg);
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, opacity 0.15s;
+      opacity: 0.5;
+    }
+
+    .composer-send.active {
+      opacity: 1;
+    }
+
+    .composer-send:hover {
+      background: var(--btn-primary-hover);
+    }
+
+    .composer-send svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ─── Success / Error Card Accents ─────────────────────────────── */
+    .card-success {
+      border-left: 3px solid var(--status-success);
+    }
+
+    .card-error-accent {
+      border-left: 3px solid var(--status-error);
+    }
+
+    /* ─── Status Row ───────────────────────────────────────────────── */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-050);
+      font-size: var(--font-size-base);
+      padding: 2px 0;
+    }
+
+    .status-icon {
+      font-size: var(--font-size-medium);
+      flex-shrink: 0;
+    }
+
+    /* ─── WhatsApp Rendering ───────────────────────────────────────── */
+    .wa-message {
+      font-size: var(--font-size-base);
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .wa-bold {
+      font-weight: 700;
+    }
+
+    .wa-buttons {
+      display: flex;
+      gap: var(--space-050);
+      margin-top: var(--space-075);
+    }
+
+    .wa-btn {
+      font-family: var(--font-family);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--text-link);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-base);
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .wa-btn:hover {
+      background: rgba(29,155,209,0.08);
+    }
+
+    /* ─── SMS Rendering ────────────────────────────────────────────── */
+    .sms-message {
+      font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+      font-size: var(--font-size-base);
+      line-height: 1.7;
+      white-space: pre-line;
+      color: var(--text-primary);
+    }
+
+    /* ─── Confirmation Card ────────────────────────────────────────── */
+    .confirm-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-050);
+      padding: 3px 0;
+      font-size: var(--font-size-base);
+    }
+
+    .confirm-item-num {
+      color: var(--text-tertiary);
+      font-weight: 600;
+      width: 20px;
+    }
+
+    .confirm-item-source {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ─── Responsive ───────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .app {
+        border: none;
+      }
+      .fields {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+      .field-label {
+        color: var(--text-tertiary);
+        font-size: var(--font-size-small);
+      }
+      .opp-row {
+        grid-template-columns: 28px 24px 1fr auto;
+      }
+      .opp-stage, .opp-source-dot {
+        display: none;
+      }
+      .platform-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-avatar">&#x1F916;</div>
+      <div class="header-info">
+        <div class="header-title">
+          Partner Success Agent
+          <span class="header-badge">App</span>
+        </div>
+        <div class="header-subtitle">Mercedes Benz &middot; Multi-CRM Integration</div>
+      </div>
+      <div class="platform-toggle" id="platform-toggle">
+        <button class="platform-btn active" data-platform="slack">Slack</button>
+        <button class="platform-btn" data-platform="whatsapp">WhatsApp</button>
+        <button class="platform-btn" data-platform="sms">SMS</button>
+      </div>
+    </div>
+
+    <!-- Message Feed -->
+    <div class="feed" id="feed"></div>
+
+    <!-- Composer -->
+    <div class="composer">
+      <div class="composer-inner">
+        <input
+          type="text"
+          class="composer-input"
+          id="composer-input"
+          placeholder="Ask Partner Success Agent..."
+          autocomplete="off"
+        />
+        <button class="composer-send" id="composer-send" title="Send">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1.5 1.5L14.5 8L1.5 14.5V9.5L10.5 8L1.5 6.5V1.5Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════════
+    // MOCK DATA — 18 opportunities across 3 CRMs
+    // ═══════════════════════════════════════════════════════════════════
+    const OPPORTUNITIES = [
+      { id: 1, name: 'Acme Corp Expansion', account: 'Daimler AG', amount: 450000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-15' },
+      { id: 2, name: 'TechVentures Migration', account: 'Daimler AG', amount: 120000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-07-30' },
+      { id: 3, name: 'Meridian Upsell', account: 'Daimler AG', amount: 280000, stage: 'Submitted', source: 'salesforce', closeDate: '2026-08-15' },
+      { id: 4, name: 'NovaStar Labs Renewal', account: 'Elysium Motors', amount: 340000, stage: 'Approved', source: 'copper', closeDate: '2026-09-15' },
+      { id: 5, name: 'Pinnacle Financial New', account: 'Elysium Motors', amount: 95000, stage: 'Discovery', source: 'hubspot', closeDate: '2026-10-30' },
+      { id: 6, name: 'Fleet Purchase Program', account: 'Landmark Cars', amount: 2450000, stage: 'Proposal', source: 'salesforce', closeDate: '2026-09-30' },
+      { id: 7, name: 'EV Expansion Initiative', account: 'Elysium Motors', amount: 890000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-10-15' },
+      { id: 8, name: 'Luxury Model Negotiation', account: 'Daimler AG', amount: 620000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-08-30' },
+      { id: 9, name: 'Eco-Friendly Fleet', account: 'Daimler AG', amount: 175000, stage: 'Discovery', source: 'copper', closeDate: '2026-11-15' },
+      { id: 10, name: 'Smart City Partnership', account: 'T&T Motors', amount: 1200000, stage: 'Proposal', source: 'hubspot', closeDate: '2026-09-15' },
+      { id: 11, name: 'Autonomous Delivery Pilot', account: 'Landmark Cars', amount: 560000, stage: 'Under Review', source: 'salesforce', closeDate: '2026-08-20' },
+      { id: 12, name: 'Premium Service Package', account: 'T&T Motors', amount: 88000, stage: 'Approved', source: 'copper', closeDate: '2026-07-20' },
+      { id: 13, name: 'Year End Clearance', account: 'Daimler AG', amount: 10000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-06-30' },
+      { id: 14, name: 'Luxury EV Promo', account: 'Elysium Motors', amount: 420000, stage: 'Submitted', source: 'hubspot', closeDate: '2026-08-10' },
+      { id: 15, name: 'Regional Dealer Network', account: 'Landmark Cars', amount: 780000, stage: 'Discovery', source: 'salesforce', closeDate: '2026-12-01' },
+      { id: 16, name: 'Connected Car Services', account: 'T&T Motors', amount: 310000, stage: 'Proposal', source: 'copper', closeDate: '2026-09-30' },
+      { id: 17, name: 'Hybrid Fleet Transition', account: 'Daimler AG', amount: 950000, stage: 'Approved', source: 'hubspot', closeDate: '2026-10-01' },
+      { id: 18, name: 'Parts Distribution Deal', account: 'Landmark Cars', amount: 145000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-25' }
+    ];
+
+    // ═══════════════════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════════════════
+    const STATE = {
+      mode: 'scripted',         // 'scripted' | 'browse'
+      browsePhase: 'entry',     // 'entry' | 'list' | 'selected' | 'confirm' | 'result'
+      filters: {},              // { source?, stage?, amountMin? }
+      page: 0,
+      pageSize: 5,
+      selectedIds: new Set(),
+      platform: 'slack',        // 'slack' | 'whatsapp' | 'sms'
+      scriptedIndex: 0,
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PATH A — SCRIPTED TURNS (from video demo)
+    // ═══════════════════════════════════════════════════════════════════
+    const TURNS = [
+      {
+        id: 'welcome',
+        agent: {
+          text: `Hi, I'm your Partner Success Agent. I can help you browse opportunities across your connected CRMs, sync records, and check deal status. What can I help you with?`
+        },
+        suggestions: ['browse opportunities', 'get my most recent deal', 'get deals from my partners', 'check sync status']
+      },
+      {
+        id: 'recent-deal',
+        trigger: /recent deal|most recent|my deal/i,
+        userMessage: 'get my most recent deal',
+        agent: {
+          text: "Here's your deal:",
+          card: 'deal-card'
+        },
+        suggestions: ['please move this to my CRM', 'get deals from my partners', 'check sync status']
+      },
+      {
+        id: 'move-to-crm',
+        trigger: /move.*crm|move this/i,
+        userMessage: 'please move this to my CRM',
+        agent: {
+          card: 'move-success'
+        },
+        suggestions: ['browse opportunities', 'get deals from my partners', 'check sync status']
+      },
+      {
+        id: 'partner-deals',
+        trigger: /deals.*partners|latest.*status|from my partners/i,
+        userMessage: 'get me the latest status of deals from my partners',
+        agent: {
+          text: null,
+          card: 'multi-crm-deals'
+        },
+        suggestions: ['browse opportunities', 'check sync status', 'get my most recent deal']
+      },
+      {
+        id: 'sync-status',
+        trigger: /sync status|overview|on flight|synced/i,
+        userMessage: 'Get me an overview of the deals, which are synced or the ones which are on flight',
+        agent: {
+          card: 'sync-summary'
+        },
+        suggestions: ['browse opportunities', 'get my most recent deal', 'get deals from my partners']
+      }
+    ];
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CARD RENDERERS (Path A)
+    // ═══════════════════════════════════════════════════════════════════
+    const CARDS = {
+      'deal-card': () => `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">&#x1F3E2; Daimler AG - Year End Clearance</div>
+            <span class="tag tag-salesforce">Salesforce CRM</span>
+          </div>
+          <div class="card-body">
+            <div class="fields">
+              <span class="field-label">Stage</span>
+              <span class="field-value">Negotiation</span>
+              <span class="field-label">Close Date</span>
+              <span class="field-value">2026-06-30</span>
+              <span class="field-label">Amount</span>
+              <span class="field-value">$10,000</span>
+            </div>
+          </div>
+        </div>
+      `,
+
+      'move-success': () => `
+        <div class="card card-success">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:var(--space-050);margin-bottom:var(--space-050);">
+              <span style="font-size:18px;">&#x2705;</span>
+              <strong style="font-size:var(--font-size-medium);">Record Moved Successfully</strong>
+            </div>
+            <div class="fields" style="margin-bottom:var(--space-075);">
+              <span class="field-label">Record</span>
+              <span class="field-value">Daimler AG - Year End Clearance</span>
+              <span class="field-label">Destination</span>
+              <span class="field-value">HubSpot CRM</span>
+            </div>
+            <p style="color:var(--text-secondary);font-size:var(--font-size-base);">&#x1F389; Let me know if there's anything else you'd like to do!</p>
+          </div>
+        </div>
+      `,
+
+      'multi-crm-deals': () => `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">Landmark Cars</div>
+            <span class="tag tag-salesforce">Source: Salesforce CRM</span>
+          </div>
+          <div class="card-body">
+            <div class="fields">
+              <span class="field-label">Opportunity Name</span>
+              <span class="field-value">Mercedes-Benz India - Fleet Purchase Program 2027</span>
+              <span class="field-label">Account</span>
+              <span class="field-value">Mercedes-Benz India Pvt. Ltd.</span>
+              <span class="field-label">Stage</span>
+              <span class="field-value">Proposal / Price Quote</span>
+              <span class="field-label">Probability</span>
+              <span class="field-value">75%</span>
+              <span class="field-label">Amount</span>
+              <span class="field-value">$2,450,000</span>
+              <span class="field-label">Close Date</span>
+              <span class="field-value">2026-09-30</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:var(--space-050);">
+          <div class="card-header">
+            <div class="card-header-title">T&amp;T Motors</div>
+            <span class="tag tag-hubspot">Source: Hubspot CRM</span>
+          </div>
+          <div class="card-body">
+            <div class="fields">
+              <span class="field-label">Deal Name</span>
+              <span class="field-value">Mercedes-Benz India - Fleet Purchase Program 2027</span>
+              <span class="field-label">Pipeline</span>
+              <span class="field-value">Enterprise Partnerships</span>
+              <span class="field-label">Stage</span>
+              <span class="field-value">Contract Review</span>
+              <span class="field-label">Amount</span>
+              <span class="field-value">$2,450,000</span>
+              <span class="field-label">Close Date</span>
+              <span class="field-value">2026-09-30</span>
+              <span class="field-label">Lead Source</span>
+              <span class="field-value">Partner Referral</span>
+            </div>
+          </div>
+        </div>
+      `,
+
+      'sync-summary': () => `
+        <div class="card">
+          <div class="card-section">
+            <div class="card-section-title">Sync Records Summary</div>
+            <div class="fields">
+              <span class="field-label">Total Records</span>
+              <span class="field-value">5</span>
+              <span class="field-label">Account</span>
+              <span class="field-value">Daimler AG</span>
+              <span class="field-label">Object Type</span>
+              <span class="field-value">Opportunity</span>
+            </div>
+            <div style="margin-top:var(--space-075);">
+              <div class="status-row">
+                <span class="status-icon">&#x2705;</span>
+                <span class="field-label">Outbound Sync Status:</span>
+                <span class="tag tag-success">Synced</span>
+              </div>
+              <div class="status-row">
+                <span class="status-icon">&#x274C;</span>
+                <span class="field-label">Inbound Sync Status:</span>
+                <span class="tag tag-error">Failed</span>
+              </div>
+              <div class="status-row" style="margin-top:4px;">
+                <span class="field-label">Last Successful Outbound Sync:</span>
+                <span class="field-value">June 10, 2026, 2:00 PM</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">Affected Records</div>
+            <ul class="bullet-list">
+              <li>Daimler AG &ndash; Eco-Friendly Fleet</li>
+              <li>Daimler AG &ndash; Luxury Model Negotiation</li>
+              <li>Daimler AG &ndash; Year End Clearance</li>
+              <li>Elysium Motors &ndash; EV Expansion</li>
+              <li>Elysium Motors &ndash; Luxury EV Promo</li>
+            </ul>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">&#x26A0;&#xFE0F; Failure Details</div>
+            <div class="fields">
+              <span class="field-label">Operation Failed</span>
+              <span class="field-value">Inbound Sync (for all 5 records)</span>
+              <span class="field-label">Last Successful Sync</span>
+              <span class="field-value">June 10, 2026, 2:00 PM</span>
+            </div>
+          </div>
+          <div class="card-section">
+            <div class="card-section-title">Summary</div>
+            <p style="font-size:var(--font-size-base);color:var(--text-primary);">Outbound synchronization completed successfully for all records. However, inbound synchronization is failing, preventing updates from being processed back into Salesforce since June 10, 2026, 2:00 PM.</p>
+          </div>
+          <div class="card-section" style="background:var(--status-warning-bg);">
+            <div class="card-section-title">&#x1F4A1; Recommended Action</div>
+            <p style="font-size:var(--font-size-base);color:var(--text-primary);">Review the inbound sync error details for the affected records to identify any common failure pattern or configuration issue.</p>
+          </div>
+        </div>
+      `
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════════
+    const feedEl = document.getElementById('feed');
+    const inputEl = document.getElementById('composer-input');
+    const sendBtn = document.getElementById('composer-send');
+    let isProcessing = false;
+
+    function getTimestamp() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${m} ${ampm}`;
+    }
+
+    function formatAmount(amount) {
+      if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
+      if (amount >= 1000) return `$${Math.round(amount / 1000)}K`;
+      return `$${amount.toLocaleString()}`;
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[d.getMonth()]} '${String(d.getFullYear()).slice(2)}`;
+    }
+
+    function scrollToBottom() {
+      requestAnimationFrame(() => {
+        feedEl.scrollTop = feedEl.scrollHeight;
+      });
+    }
+
+    function disableAllSuggestions() {
+      document.querySelectorAll('.suggestion-btn').forEach(btn => { btn.disabled = true; });
+    }
+
+    function disableAllActionButtons() {
+      document.querySelectorAll('.action-btn:not([data-keep])').forEach(btn => { btn.disabled = true; });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // BROWSE ENGINE — filtering, pagination, selection
+    // ═══════════════════════════════════════════════════════════════════
+    function getFilteredOpportunities() {
+      let result = [...OPPORTUNITIES];
+      const f = STATE.filters;
+      if (f.source) result = result.filter(o => o.source === f.source);
+      if (f.stage) result = result.filter(o => o.stage === f.stage);
+      if (f.amountMin) result = result.filter(o => o.amount >= f.amountMin);
+      return result;
+    }
+
+    function getCurrentPage() {
+      const filtered = getFilteredOpportunities();
+      const start = STATE.page * STATE.pageSize;
+      return filtered.slice(start, start + STATE.pageSize);
+    }
+
+    function getTotalPages() {
+      return Math.ceil(getFilteredOpportunities().length / STATE.pageSize);
+    }
+
+    function getSelectedTotal() {
+      let total = 0;
+      STATE.selectedIds.forEach(id => {
+        const opp = OPPORTUNITIES.find(o => o.id === id);
+        if (opp) total += opp.amount;
+      });
+      return total;
+    }
+
+    function getSourceCounts() {
+      const counts = { salesforce: 0, hubspot: 0, copper: 0 };
+      OPPORTUNITIES.forEach(o => counts[o.source]++);
+      return counts;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // RENDERERS
+    // ═══════════════════════════════════════════════════════════════════
+
+    function renderAgentMessage(content, options = {}) {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.innerHTML = `
+        <div class="message-avatar agent">&#x1F916;</div>
+        <div class="message-body">
+          <div class="message-header">
+            <span class="message-author">Partner Success Agent</span>
+            <span class="message-author-badge">APP</span>
+            <span class="message-time">${getTimestamp()}</span>
+          </div>
+          ${content}
+        </div>
+      `;
+      feedEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function renderScriptedAgentMessage(turn) {
+      const content = `
+        ${turn.agent.text ? `<div class="message-text">${turn.agent.text}</div>` : ''}
+        ${turn.agent.card ? CARDS[turn.agent.card]() : ''}
+        ${turn.suggestions ? `
+          <div class="suggestions">
+            ${turn.suggestions.map(s => `<button class="suggestion-btn" onclick="handleSuggestion('${s.replace(/'/g, "\\'")}')">${s}</button>`).join('')}
+          </div>
+        ` : ''}
+      `;
+      renderAgentMessage(content);
+    }
+
+    function renderUserMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.innerHTML = `
+        <div class="message-avatar user">You</div>
+        <div class="message-body">
+          <div class="message-header">
+            <span class="message-author">You</span>
+            <span class="message-time">${getTimestamp()}</span>
+          </div>
+          <div class="message-text">${text}</div>
+        </div>
+      `;
+      feedEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function showTypingIndicator() {
+      const div = document.createElement('div');
+      div.className = 'typing-indicator';
+      div.id = 'typing';
+      div.innerHTML = `
+        <div class="message-avatar agent">&#x1F916;</div>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+      feedEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+      const el = document.getElementById('typing');
+      if (el) el.remove();
+    }
+
+    // ─── Platform-specific Browse Renderers ─────────────────────────
+
+    function renderBrowseEntry() {
+      const counts = getSourceCounts();
+      const total = OPPORTUNITIES.length;
+
+      if (STATE.platform === 'slack') {
+        const content = `
+          <div class="message-text">You have <strong>${total} opportunities</strong> across 3 connected CRMs.</div>
+          <div style="margin-top:var(--space-050);font-size:var(--font-size-base);color:var(--text-secondary);">
+            <span class="tag tag-salesforce" style="margin-right:4px;">Salesforce (${counts.salesforce})</span>
+            <span class="tag tag-hubspot" style="margin-right:4px;">HubSpot (${counts.hubspot})</span>
+            <span class="tag tag-copper">Copper (${counts.copper})</span>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn action-btn-primary" onclick="handleBrowseAll()">Browse All</button>
+            <button class="action-btn action-btn-secondary" onclick="handleFilterStart()">Filter First</button>
+            <button class="action-btn action-btn-secondary" onclick="handleSuggestion('check sync status')">Sync Status</button>
+          </div>
+          <div style="margin-top:var(--space-050);font-size:var(--font-size-small);color:var(--text-tertiary);">
+            Or ask me anything: "show deals over $200K from Salesforce"
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else if (STATE.platform === 'whatsapp') {
+        const content = `
+          <div class="wa-message">You have <span class="wa-bold">${total} opportunities</span> across Salesforce, HubSpot, and Copper.
+
+Salesforce (${counts.salesforce}) &middot; HubSpot (${counts.hubspot}) &middot; Copper (${counts.copper})</div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="handleBrowseAll()">Browse</button>
+            <button class="wa-btn" onclick="handleFilterStart()">Filter</button>
+            <button class="wa-btn" onclick="handleSuggestion('check sync status')">Status</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else {
+        const content = `
+          <div class="sms-message">You have ${total} opportunities across Salesforce, HubSpot, and Copper.
+
+Reply:
+B - Browse all
+F - Filter first
+S - Check sync status</div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    function renderBrowseList() {
+      const filtered = getFilteredOpportunities();
+      const page = getCurrentPage();
+      const totalPages = getTotalPages();
+      const start = STATE.page * STATE.pageSize;
+      const end = Math.min(start + STATE.pageSize, filtered.length);
+
+      if (STATE.platform === 'slack') {
+        renderSlackBrowseList(filtered, page, start, end, totalPages);
+      } else if (STATE.platform === 'whatsapp') {
+        renderWhatsAppBrowseList(filtered, page, start, end, totalPages);
+      } else {
+        renderSMSBrowseList(filtered, page, start, end, totalPages);
+      }
+    }
+
+    function renderSlackBrowseList(filtered, page, start, end, totalPages) {
+      // Build filter chips if active
+      let filterChips = '';
+      if (Object.keys(STATE.filters).length > 0) {
+        const chips = [];
+        if (STATE.filters.source) chips.push(`<span class="filter-chip">${STATE.filters.source} <span class="filter-chip-remove" onclick="removeFilter('source')">&#x2715;</span></span>`);
+        if (STATE.filters.stage) chips.push(`<span class="filter-chip">${STATE.filters.stage} <span class="filter-chip-remove" onclick="removeFilter('stage')">&#x2715;</span></span>`);
+        if (STATE.filters.amountMin) chips.push(`<span class="filter-chip">&gt;${formatAmount(STATE.filters.amountMin)} <span class="filter-chip-remove" onclick="removeFilter('amountMin')">&#x2715;</span></span>`);
+        filterChips = `<div class="filter-bar">${chips.join('')}</div>`;
+      }
+
+      // Build rows
+      const rows = page.map((opp, i) => {
+        const globalIdx = start + i + 1;
+        const isSelected = STATE.selectedIds.has(opp.id);
+        return `
+          <div class="opp-row ${isSelected ? 'selected' : ''}" onclick="toggleSelection(${opp.id})">
+            <div class="opp-checkbox">${isSelected ? '&#x2713;' : ''}</div>
+            <div class="opp-num">${globalIdx}</div>
+            <div class="opp-name">${opp.name}</div>
+            <div class="opp-amount">${formatAmount(opp.amount)}</div>
+            <div class="opp-stage">${opp.stage}</div>
+            <div class="opp-source-dot ${opp.source}" title="${opp.source}"></div>
+          </div>
+        `;
+      }).join('');
+
+      // Build selection summary
+      const selCount = STATE.selectedIds.size;
+      let selectionBar = '';
+      if (selCount > 0) {
+        selectionBar = `
+          <div class="selection-summary">
+            <span class="selection-count">&#x2713; ${selCount} selected &middot; ${formatAmount(getSelectedTotal())} total</span>
+            <div style="display:flex;gap:var(--space-050);">
+              <button class="action-btn action-btn-primary" onclick="handleSyncSelected()">Sync to My CRM</button>
+              <button class="action-btn action-btn-danger" onclick="handleClearSelection()">Clear</button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Pagination
+      const pagination = totalPages > 1 ? `
+        <div class="pagination">
+          <button class="page-btn" onclick="handlePagePrev()" ${STATE.page === 0 ? 'disabled' : ''}>&larr; Prev</button>
+          <span class="page-info">Page ${STATE.page + 1} of ${totalPages}</span>
+          <button class="page-btn" onclick="handlePageNext()" ${STATE.page >= totalPages - 1 ? 'disabled' : ''}>Next &rarr;</button>
+        </div>
+      ` : '';
+
+      const content = `
+        <div class="opp-table">
+          <div class="opp-table-header">
+            <span class="opp-table-title">Opportunities (${start+1}-${end} of ${filtered.length})</span>
+          </div>
+          ${filterChips}
+          ${rows}
+          ${selectionBar}
+          ${pagination}
+        </div>
+        <div class="action-buttons" style="margin-top:var(--space-050);">
+          ${selCount === 0 ? `<button class="action-btn action-btn-secondary" onclick="handleSelectAll()">Select All</button>` : ''}
+          <button class="action-btn action-btn-secondary" onclick="handleFilterStart()">Filter</button>
+        </div>
+        <div style="margin-top:var(--space-050);font-size:var(--font-size-small);color:var(--text-tertiary);">
+          Tip: type numbers to select (e.g. "1,3,4") or describe what you need
+        </div>
+      `;
+      renderAgentMessage(content);
+    }
+
+    function renderWhatsAppBrowseList(filtered, page, start, end, totalPages) {
+      let filterLabel = '';
+      if (Object.keys(STATE.filters).length > 0) {
+        const parts = [];
+        if (STATE.filters.source) parts.push(STATE.filters.source);
+        if (STATE.filters.amountMin) parts.push(`>${formatAmount(STATE.filters.amountMin)}`);
+        if (STATE.filters.stage) parts.push(STATE.filters.stage);
+        filterLabel = `\n<span class="wa-bold">Filtered:</span> ${parts.join(' &middot; ')}`;
+      }
+
+      const items = page.map((opp, i) => {
+        const globalIdx = start + i + 1;
+        const sel = STATE.selectedIds.has(opp.id) ? '&#x2713; ' : '';
+        return `${sel}<span class="wa-bold">${globalIdx}. ${opp.name}</span>\n   ${formatAmount(opp.amount)} &middot; ${opp.stage} &middot; ${opp.source}`;
+      }).join('\n\n');
+
+      const selCount = STATE.selectedIds.size;
+      let selLine = '';
+      if (selCount > 0) {
+        selLine = `\n\n<span class="wa-bold">Selected: ${selCount} (${formatAmount(getSelectedTotal())})</span>`;
+      }
+
+      const content = `
+        <div class="wa-message"><span class="wa-bold">Showing ${start+1}-${end} of ${filtered.length}</span>${filterLabel}
+
+${items}${selLine}
+
+Reply with numbers to select (e.g. <span class="wa-bold">1,3,4</span>)</div>
+        <div class="wa-buttons">
+          ${STATE.page < totalPages - 1 ? '<button class="wa-btn" onclick="handlePageNext()">Next Page</button>' : ''}
+          ${selCount > 0 ? '<button class="wa-btn" onclick="handleSyncSelected()">Sync to CRM</button>' : '<button class="wa-btn" onclick="handleSelectAll()">Select All</button>'}
+          <button class="wa-btn" onclick="${selCount > 0 ? 'handleClearSelection()' : 'handleFilterStart()'}">
+            ${selCount > 0 ? 'Clear' : 'Filter'}
+          </button>
+        </div>
+      `;
+      renderAgentMessage(content);
+    }
+
+    function renderSMSBrowseList(filtered, page, start, end, totalPages) {
+      let filterLabel = '';
+      if (Object.keys(STATE.filters).length > 0) {
+        const parts = [];
+        if (STATE.filters.source) parts.push(STATE.filters.source);
+        if (STATE.filters.amountMin) parts.push(`>${formatAmount(STATE.filters.amountMin)}`);
+        filterLabel = ` (${parts.join(', ')})`;
+      }
+
+      const items = page.map((opp, i) => {
+        const globalIdx = start + i + 1;
+        const sel = STATE.selectedIds.has(opp.id) ? '* ' : '  ';
+        return `${sel}${globalIdx}. ${opp.name}\n     ${formatAmount(opp.amount)} | ${opp.stage} | ${opp.source}`;
+      }).join('\n');
+
+      const selCount = STATE.selectedIds.size;
+      let selLine = selCount > 0 ? `\nSelected: ${selCount} (${formatAmount(getSelectedTotal())})` : '';
+
+      const content = `
+        <div class="sms-message">Showing ${start+1}-${end} of ${filtered.length}${filterLabel}
+
+${items}${selLine}
+
+Select: reply numbers (e.g. 1,3,4)
+N=next P=prev F=filter${selCount > 0 ? ' S=sync C=clear' : ' A=select all'}</div>
+      `;
+      renderAgentMessage(content);
+    }
+
+    function renderConfirmation() {
+      const selected = OPPORTUNITIES.filter(o => STATE.selectedIds.has(o.id));
+      const total = getSelectedTotal();
+
+      if (STATE.platform === 'slack') {
+        const items = selected.map((opp, i) => `
+          <div class="confirm-item">
+            <span class="confirm-item-num">${i+1}.</span>
+            <span class="confirm-item-source ${opp.source}" style="width:8px;height:8px;border-radius:50;display:inline-block;background:var(--crm-${opp.source});"></span>
+            <span>${opp.name}</span>
+            <span style="color:var(--text-secondary);">&mdash; ${formatAmount(opp.amount)} (from ${opp.source})</span>
+          </div>
+        `).join('');
+
+        const content = `
+          <div class="card">
+            <div class="card-section">
+              <div class="card-section-title">Confirm Sync</div>
+              <div class="message-text" style="margin-bottom:var(--space-075);">Ready to sync <strong>${selected.length} opportunities</strong> to your CRM:</div>
+              ${items}
+              <div class="fields" style="margin-top:var(--space-075);">
+                <span class="field-label">Target</span>
+                <span class="field-value">Your CRM (HubSpot)</span>
+                <span class="field-label">Total Value</span>
+                <span class="field-value">${formatAmount(total)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn action-btn-primary" onclick="handleConfirmSync()">&#x2713; Confirm Sync</button>
+            <button class="action-btn action-btn-secondary" onclick="handleEditSelection()">Edit Selection</button>
+            <button class="action-btn action-btn-danger" onclick="handleCancel()">Cancel</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else if (STATE.platform === 'whatsapp') {
+        const items = selected.map((o, i) => `${i+1}. ${o.name} (${formatAmount(o.amount)})`).join('\n');
+        const content = `
+          <div class="wa-message"><span class="wa-bold">CONFIRM: Sync ${selected.length} records to HubSpot?</span>
+
+${items}
+
+Total: <span class="wa-bold">${formatAmount(total)}</span></div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="handleConfirmSync()">Confirm</button>
+            <button class="wa-btn" onclick="handleEditSelection()">Edit</button>
+            <button class="wa-btn" onclick="handleCancel()">Cancel</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else {
+        const items = selected.map((o, i) => `${i+1}. ${o.name} (${formatAmount(o.amount)})`).join('\n');
+        const content = `
+          <div class="sms-message">CONFIRM: Sync ${selected.length} records to HubSpot?
+
+${items}
+
+Total: ${formatAmount(total)}
+
+Y=confirm E=edit X=cancel</div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    function renderSyncResult() {
+      const selected = OPPORTUNITIES.filter(o => STATE.selectedIds.has(o.id));
+      const total = getSelectedTotal();
+
+      if (STATE.platform === 'slack') {
+        const items = selected.map(opp => `
+          <div class="status-row">
+            <span class="status-icon">&#x2705;</span>
+            <span>${opp.name}</span>
+            <span style="color:var(--text-tertiary);">&mdash; synced to HubSpot</span>
+          </div>
+        `).join('');
+
+        const content = `
+          <div class="card card-success">
+            <div class="card-section">
+              <div style="display:flex;align-items:center;gap:var(--space-050);margin-bottom:var(--space-075);">
+                <span style="font-size:18px;">&#x2705;</span>
+                <strong style="font-size:var(--font-size-medium);">Sync Complete!</strong>
+              </div>
+              ${items}
+              <div style="margin-top:var(--space-075);font-size:var(--font-size-base);color:var(--text-secondary);">
+                ${selected.length}/${selected.length} opportunities synced successfully to HubSpot.
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn action-btn-primary" onclick="handleSyncMore()">Sync More</button>
+            <button class="action-btn action-btn-secondary" onclick="handleDone()">Done</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else if (STATE.platform === 'whatsapp') {
+        const items = selected.map(o => `&#x2713; ${o.name} &mdash; synced`).join('\n');
+        const content = `
+          <div class="wa-message"><span class="wa-bold">&#x2705; Sync complete!</span>
+
+${items}
+
+${selected.length}/${selected.length} opportunities synced to HubSpot.</div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="handleSyncMore()">Sync More</button>
+            <button class="wa-btn" onclick="handleDone()">Done</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else {
+        const items = selected.map(o => `OK ${o.name}`).join('\n');
+        const content = `
+          <div class="sms-message">SYNC COMPLETE
+
+${items}
+
+${selected.length}/${selected.length} synced to HubSpot.
+
+M=sync more D=done</div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // BROWSE HANDLERS
+    // ═══════════════════════════════════════════════════════════════════
+
+    function handleBrowseAll() {
+      disableAllActionButtons();
+      STATE.mode = 'browse';
+      STATE.browsePhase = 'list';
+      STATE.page = 0;
+      STATE.filters = {};
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 600);
+    }
+
+    function handleFilterStart() {
+      disableAllActionButtons();
+      STATE.mode = 'browse';
+
+      if (STATE.platform === 'slack') {
+        // Show filter dropdowns as a card
+        const content = `
+          <div class="card">
+            <div class="card-section">
+              <div class="card-section-title">Filter Opportunities</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-075);margin-top:var(--space-050);">
+                <div>
+                  <label style="font-size:var(--font-size-small);color:var(--text-secondary);font-weight:600;display:block;margin-bottom:4px;">Source</label>
+                  <select id="filter-source" style="width:100%;font-family:var(--font-family);font-size:var(--font-size-base);background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-card);border-radius:var(--radius-small);padding:6px 8px;">
+                    <option value="">All CRMs</option>
+                    <option value="salesforce">Salesforce</option>
+                    <option value="hubspot">HubSpot</option>
+                    <option value="copper">Copper</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:var(--font-size-small);color:var(--text-secondary);font-weight:600;display:block;margin-bottom:4px;">Stage</label>
+                  <select id="filter-stage" style="width:100%;font-family:var(--font-family);font-size:var(--font-size-base);background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-card);border-radius:var(--radius-small);padding:6px 8px;">
+                    <option value="">All Stages</option>
+                    <option value="Discovery">Discovery</option>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Proposal">Proposal</option>
+                    <option value="Negotiation">Negotiation</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:var(--font-size-small);color:var(--text-secondary);font-weight:600;display:block;margin-bottom:4px;">Minimum Amount</label>
+                  <select id="filter-amount" style="width:100%;font-family:var(--font-family);font-size:var(--font-size-base);background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-card);border-radius:var(--radius-small);padding:6px 8px;">
+                    <option value="">Any Amount</option>
+                    <option value="100000">Over $100K</option>
+                    <option value="200000">Over $200K</option>
+                    <option value="500000">Over $500K</option>
+                    <option value="1000000">Over $1M</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="action-btn action-btn-primary" onclick="handleApplyFilters()">Apply Filters</button>
+            <button class="action-btn action-btn-secondary" onclick="handleBrowseAll()">Clear &amp; Browse All</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else if (STATE.platform === 'whatsapp') {
+        const content = `
+          <div class="wa-message">How would you like to filter?
+
+1. By CRM Source (Salesforce, HubSpot, Copper)
+2. By Stage (Discovery, Proposal, Negotiation...)
+3. By Amount (Over $100K, $200K, $500K, $1M)
+4. Clear all filters &amp; browse</div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="handleFilterSource()">By Source</button>
+            <button class="wa-btn" onclick="handleFilterAmount()">By Amount</button>
+            <button class="wa-btn" onclick="handleBrowseAll()">Browse All</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      } else {
+        const content = `
+          <div class="sms-message">Filter by:
+1 - CRM Source
+2 - Stage
+3 - Amount
+C - Clear &amp; browse all</div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    function handleApplyFilters() {
+      disableAllActionButtons();
+      const sourceEl = document.getElementById('filter-source');
+      const stageEl = document.getElementById('filter-stage');
+      const amountEl = document.getElementById('filter-amount');
+
+      STATE.filters = {};
+      if (sourceEl && sourceEl.value) STATE.filters.source = sourceEl.value;
+      if (stageEl && stageEl.value) STATE.filters.stage = stageEl.value;
+      if (amountEl && amountEl.value) STATE.filters.amountMin = parseInt(amountEl.value);
+
+      STATE.page = 0;
+      STATE.browsePhase = 'list';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 500);
+    }
+
+    function handleFilterSource() {
+      disableAllActionButtons();
+      const counts = getSourceCounts();
+      if (STATE.platform === 'whatsapp') {
+        const content = `
+          <div class="wa-message">Select CRM source:</div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="applySourceFilter('salesforce')">Salesforce (${counts.salesforce})</button>
+            <button class="wa-btn" onclick="applySourceFilter('hubspot')">HubSpot (${counts.hubspot})</button>
+            <button class="wa-btn" onclick="applySourceFilter('copper')">Copper (${counts.copper})</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    function handleFilterAmount() {
+      disableAllActionButtons();
+      if (STATE.platform === 'whatsapp') {
+        const content = `
+          <div class="wa-message">Select minimum amount:</div>
+          <div class="wa-buttons">
+            <button class="wa-btn" onclick="applyAmountFilter(100000)">Over $100K</button>
+            <button class="wa-btn" onclick="applyAmountFilter(200000)">Over $200K</button>
+            <button class="wa-btn" onclick="applyAmountFilter(500000)">Over $500K</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      }
+    }
+
+    function applySourceFilter(source) {
+      disableAllActionButtons();
+      STATE.filters.source = source;
+      STATE.page = 0;
+      STATE.browsePhase = 'list';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 500);
+    }
+
+    function applyAmountFilter(min) {
+      disableAllActionButtons();
+      STATE.filters.amountMin = min;
+      STATE.page = 0;
+      STATE.browsePhase = 'list';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 500);
+    }
+
+    function removeFilter(key) {
+      delete STATE.filters[key];
+      STATE.page = 0;
+      // Re-render by showing new list
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 300);
+    }
+
+    function toggleSelection(id) {
+      if (STATE.selectedIds.has(id)) {
+        STATE.selectedIds.delete(id);
+      } else {
+        STATE.selectedIds.add(id);
+      }
+      // Re-render list in place
+      // Remove last agent message and re-render
+      const messages = feedEl.querySelectorAll('.message');
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg) lastMsg.remove();
+      renderBrowseList();
+    }
+
+    function handleSelectAll() {
+      disableAllActionButtons();
+      const page = getCurrentPage();
+      page.forEach(opp => STATE.selectedIds.add(opp.id));
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 300);
+    }
+
+    function handleClearSelection() {
+      disableAllActionButtons();
+      STATE.selectedIds.clear();
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 300);
+    }
+
+    function handlePageNext() {
+      disableAllActionButtons();
+      if (STATE.page < getTotalPages() - 1) {
+        STATE.page++;
+      }
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 400);
+    }
+
+    function handlePagePrev() {
+      disableAllActionButtons();
+      if (STATE.page > 0) {
+        STATE.page--;
+      }
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 400);
+    }
+
+    function handleSyncSelected() {
+      disableAllActionButtons();
+      STATE.browsePhase = 'confirm';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderConfirmation();
+      }, 600);
+    }
+
+    function handleConfirmSync() {
+      disableAllActionButtons();
+      STATE.browsePhase = 'result';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderSyncResult();
+      }, 1200);
+    }
+
+    function handleEditSelection() {
+      disableAllActionButtons();
+      STATE.browsePhase = 'list';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseList();
+      }, 400);
+    }
+
+    function handleCancel() {
+      disableAllActionButtons();
+      STATE.selectedIds.clear();
+      STATE.mode = 'scripted';
+      STATE.browsePhase = 'entry';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        const content = `
+          <div class="message-text">No problem! What else can I help you with?</div>
+          <div class="suggestions">
+            <button class="suggestion-btn" onclick="handleSuggestion('browse opportunities')">browse opportunities</button>
+            <button class="suggestion-btn" onclick="handleSuggestion('get my most recent deal')">get my most recent deal</button>
+            <button class="suggestion-btn" onclick="handleSuggestion('check sync status')">check sync status</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      }, 500);
+    }
+
+    function handleSyncMore() {
+      disableAllActionButtons();
+      STATE.selectedIds.clear();
+      STATE.browsePhase = 'entry';
+      STATE.page = 0;
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderBrowseEntry();
+      }, 500);
+    }
+
+    function handleDone() {
+      disableAllActionButtons();
+      STATE.selectedIds.clear();
+      STATE.mode = 'scripted';
+      STATE.browsePhase = 'entry';
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        const content = `
+          <div class="message-text">Great! All records have been synced. Let me know anytime you need to manage your partner opportunities.</div>
+          <div class="suggestions">
+            <button class="suggestion-btn" onclick="handleSuggestion('browse opportunities')">browse opportunities</button>
+            <button class="suggestion-btn" onclick="handleSuggestion('get my most recent deal')">get my most recent deal</button>
+            <button class="suggestion-btn" onclick="handleSuggestion('check sync status')">check sync status</button>
+          </div>
+        `;
+        renderAgentMessage(content);
+      }, 500);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // NATURAL LANGUAGE FILTER PARSER
+    // ═══════════════════════════════════════════════════════════════════
+    function parseNaturalFilter(text) {
+      const filters = {};
+      // Source detection
+      if (/salesforce|sf\b/i.test(text)) filters.source = 'salesforce';
+      else if (/hubspot|hs\b/i.test(text)) filters.source = 'hubspot';
+      else if (/copper/i.test(text)) filters.source = 'copper';
+
+      // Amount detection
+      const amountMatch = text.match(/(?:over|above|>|more than)\s*\$?([\d,.]+)\s*(k|m)?/i);
+      if (amountMatch) {
+        let val = parseFloat(amountMatch[1].replace(/,/g, ''));
+        const unit = (amountMatch[2] || '').toLowerCase();
+        if (unit === 'k') val *= 1000;
+        if (unit === 'm') val *= 1000000;
+        filters.amountMin = val;
+      }
+
+      // Stage detection
+      if (/negotiation/i.test(text)) filters.stage = 'Negotiation';
+      else if (/proposal/i.test(text)) filters.stage = 'Proposal';
+      else if (/approved/i.test(text)) filters.stage = 'Approved';
+      else if (/discovery/i.test(text)) filters.stage = 'Discovery';
+      else if (/submitted/i.test(text)) filters.stage = 'Submitted';
+      else if (/review/i.test(text)) filters.stage = 'Under Review';
+
+      return Object.keys(filters).length > 0 ? filters : null;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // INPUT ROUTING
+    // ═══════════════════════════════════════════════════════════════════
+    function processInput(text) {
+      if (isProcessing || !text.trim()) return;
+      isProcessing = true;
+      text = text.trim();
+
+      disableAllSuggestions();
+      disableAllActionButtons();
+      renderUserMessage(text);
+      inputEl.value = '';
+      sendBtn.classList.remove('active');
+
+      // ─── BROWSE mode command routing ───────────────────────────
+      if (STATE.mode === 'browse') {
+        // Number selection: "1,3,4" or "1 3 4"
+        const numMatch = text.match(/^[\d,\s]+$/);
+        if (numMatch) {
+          const nums = text.split(/[,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+          const filtered = getFilteredOpportunities();
+          const start = STATE.page * STATE.pageSize;
+          nums.forEach(n => {
+            const idx = start + n - 1;
+            if (idx >= 0 && idx < filtered.length) {
+              const opp = filtered[idx];
+              if (STATE.selectedIds.has(opp.id)) {
+                STATE.selectedIds.delete(opp.id);
+              } else {
+                STATE.selectedIds.add(opp.id);
+              }
+            }
+          });
+          showTypingIndicator();
+          setTimeout(() => {
+            hideTypingIndicator();
+            renderBrowseList();
+            isProcessing = false;
+          }, 400);
+          return;
+        }
+
+        // Navigation commands
+        const lower = text.toLowerCase();
+        if (lower === 'n' || lower === 'next') {
+          handlePageNext(); isProcessing = false; return;
+        }
+        if (lower === 'p' || lower === 'prev' || lower === 'previous') {
+          handlePagePrev(); isProcessing = false; return;
+        }
+        if (lower === 'a' || lower === 'select all') {
+          handleSelectAll(); isProcessing = false; return;
+        }
+        if (lower === 'c' || lower === 'clear') {
+          handleClearSelection(); isProcessing = false; return;
+        }
+        if (lower === 's' || /^sync/i.test(lower)) {
+          if (STATE.selectedIds.size > 0) {
+            handleSyncSelected(); isProcessing = false; return;
+          }
+        }
+        if (lower === 'f' || lower === 'filter') {
+          handleFilterStart(); isProcessing = false; return;
+        }
+        if (lower === 'y' || lower === 'yes' || lower === 'confirm') {
+          if (STATE.browsePhase === 'confirm') {
+            handleConfirmSync(); isProcessing = false; return;
+          }
+        }
+        if (lower === 'x' || lower === 'cancel') {
+          handleCancel(); isProcessing = false; return;
+        }
+        if (lower === 'e' || lower === 'edit') {
+          handleEditSelection(); isProcessing = false; return;
+        }
+        if (lower === 'm' || lower === 'more' || lower === 'sync more') {
+          handleSyncMore(); isProcessing = false; return;
+        }
+        if (lower === 'd' || lower === 'done') {
+          handleDone(); isProcessing = false; return;
+        }
+      }
+
+      // ─── BROWSE entry triggers ─────────────────────────────────
+      if (/^browse|^b$/i.test(text)) {
+        STATE.mode = 'browse';
+        STATE.browsePhase = 'entry';
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          renderBrowseEntry();
+          isProcessing = false;
+        }, 600);
+        return;
+      }
+
+      // ─── Natural language filter ───────────────────────────────
+      const nlFilters = parseNaturalFilter(text);
+      if (nlFilters && /deal|opportunit|show|filter/i.test(text)) {
+        STATE.mode = 'browse';
+        STATE.browsePhase = 'list';
+        STATE.filters = nlFilters;
+        STATE.page = 0;
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          renderBrowseList();
+          isProcessing = false;
+        }, 700);
+        return;
+      }
+
+      // ─── PATH A — scripted triggers ────────────────────────────
+      if (/browse opportunities|browse all/i.test(text)) {
+        STATE.mode = 'browse';
+        STATE.browsePhase = 'entry';
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          renderBrowseEntry();
+          isProcessing = false;
+        }, 600);
+        return;
+      }
+
+      // Check scripted turn triggers
+      let matchedTurn = null;
+      for (let i = 1; i < TURNS.length; i++) {
+        if (TURNS[i].trigger && TURNS[i].trigger.test(text)) {
+          matchedTurn = TURNS[i];
+          break;
+        }
+      }
+
+      if (!matchedTurn) {
+        // No match — offer help
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          const content = `
+            <div class="message-text">I can help you with that! Try one of these:</div>
+            <div class="suggestions">
+              <button class="suggestion-btn" onclick="handleSuggestion('browse opportunities')">browse opportunities</button>
+              <button class="suggestion-btn" onclick="handleSuggestion('get my most recent deal')">get my most recent deal</button>
+              <button class="suggestion-btn" onclick="handleSuggestion('check sync status')">check sync status</button>
+            </div>
+          `;
+          renderAgentMessage(content);
+          isProcessing = false;
+        }, 600);
+        return;
+      }
+
+      // Scripted response
+      STATE.mode = 'scripted';
+      showTypingIndicator();
+      const delay = 800 + Math.random() * 600;
+      setTimeout(() => {
+        hideTypingIndicator();
+        renderScriptedAgentMessage(matchedTurn);
+        isProcessing = false;
+      }, delay);
+    }
+
+    function handleSuggestion(text) {
+      processInput(text);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PLATFORM TOGGLE
+    // ═══════════════════════════════════════════════════════════════════
+    document.getElementById('platform-toggle').addEventListener('click', (e) => {
+      const btn = e.target.closest('.platform-btn');
+      if (!btn) return;
+      const platform = btn.dataset.platform;
+      if (platform === STATE.platform) return;
+
+      // Update active state
+      document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      STATE.platform = platform;
+
+      // Clear feed and restart
+      feedEl.innerHTML = '';
+      STATE.mode = 'scripted';
+      STATE.browsePhase = 'entry';
+      STATE.page = 0;
+      STATE.selectedIds.clear();
+      STATE.filters = {};
+
+      renderScriptedAgentMessage(TURNS[0]);
+    });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // EVENT LISTENERS
+    // ═══════════════════════════════════════════════════════════════════
+    inputEl.addEventListener('input', () => {
+      sendBtn.classList.toggle('active', inputEl.value.trim().length > 0);
+    });
+
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        processInput(inputEl.value);
+      }
+    });
+
+    sendBtn.addEventListener('click', () => {
+      processInput(inputEl.value);
+    });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // INITIALIZE
+    // ═══════════════════════════════════════════════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+      renderScriptedAgentMessage(TURNS[0]);
+    });
+  </script>
+</body>
+</html>

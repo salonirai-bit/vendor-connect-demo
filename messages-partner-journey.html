@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Success Agent - Messages</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .messages-header {
+      background: #2C2C2E;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid #1C1C1E;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      width: 60px;
+    }
+
+    .back-button {
+      background: none;
+      border: none;
+      color: #007AFF;
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .back-button:hover {
+      opacity: 0.7;
+    }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .contact-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #007AFF, #0056CC);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .contact-name {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .verified-badge {
+      width: 14px;
+      height: 14px;
+      background: #007AFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+    }
+
+    .header-right {
+      width: 60px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+    }
+
+    .header-icon {
+      background: none;
+      border: none;
+      color: #007AFF;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-icon:hover {
+      opacity: 0.7;
+    }
+
+    /* Messages Container */
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .messages-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      background: #3A3A3C;
+      border-radius: 4px;
+    }
+
+    /* Timestamp */
+    .timestamp {
+      text-align: center;
+      color: #8E8E93;
+      font-size: 12px;
+      margin: 8px 0;
+    }
+
+    /* Message Group */
+    .message-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 65%;
+    }
+
+    .message-group.outgoing {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message-group.incoming {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    /* Message Bubble */
+    .message-bubble {
+      padding: 8px 14px;
+      font-size: 17px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    .message-bubble.outgoing {
+      background: linear-gradient(135deg, #007AFF, #0056CC);
+      color: #ffffff;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .message-bubble.incoming {
+      background: #26252A;
+      color: #ffffff;
+      border-radius: 18px 18px 18px 4px;
+    }
+
+    .message-bubble strong {
+      font-weight: 600;
+    }
+
+    .message-bubble.typing {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Typing Dots */
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #8E8E93;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    /* Delivery Status */
+    .delivery-status {
+      font-size: 11px;
+      color: #8E8E93;
+      margin-top: 2px;
+      padding-left: 4px;
+    }
+
+    /* Input Container */
+    .input-container {
+      background: #1C1C1E;
+      padding: 8px 16px 8px 16px;
+      border-top: 1px solid #2C2C2E;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .input-actions-left {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+
+    .input-icon {
+      background: none;
+      border: none;
+      color: #8E8E93;
+      font-size: 24px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .input-icon:hover {
+      background: #2C2C2E;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      background: #2C2C2E;
+      border-radius: 20px;
+      display: flex;
+      align-items: flex-end;
+      padding: 8px 12px;
+      min-height: 36px;
+      max-height: 120px;
+    }
+
+    .message-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 17px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      max-height: 104px;
+      overflow-y: auto;
+    }
+
+    .message-input::placeholder {
+      color: #8E8E93;
+    }
+
+    .message-input::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .message-input::-webkit-scrollbar-thumb {
+      background: #3A3A3C;
+      border-radius: 2px;
+    }
+
+    .send-button {
+      background: #007AFF;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 18px;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+      margin-bottom: 2px;
+    }
+
+    .send-button:hover {
+      opacity: 0.8;
+    }
+
+    .send-button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .input-actions-right {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8E8E93;
+      font-size: 15px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none;
+    }
+
+    /* List formatting in messages */
+    .message-bubble ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .message-bubble li {
+      margin: 4px 0;
+    }
+
+    /* OAuth overlay */
+    .oauth-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .oauth-overlay.hidden { display: none; }
+
+    .safari-modal {
+      background: #1C1C1E;
+      border-radius: 16px;
+      width: 380px;
+      max-width: 90vw;
+      overflow: hidden;
+      border: 1px solid #3A3A3C;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .safari-chrome {
+      background: #2C2C2E;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .safari-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .safari-dots .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background: #FF5F57; }
+    .dot.yellow { background: #FEBC2E; }
+    .dot.green { background: #28C840; }
+
+    .safari-url {
+      flex: 1;
+      background: #1C1C1E;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: #8E8E93;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .safari-body {
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .safari-logo {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .safari-title {
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .safari-desc {
+      color: #8E8E93;
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .safari-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .safari-allow {
+      background: #007AFF;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .safari-allow:hover { background: #0056CC; }
+
+    .safari-deny {
+      background: transparent;
+      color: #007AFF;
+      border: none;
+      font-size: 17px;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .safari-deny:hover { opacity: 0.7; }
+
+    /* Clickable link styling in messages */
+    .message-bubble a {
+      color: #007AFF;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="messages-header">
+    <div class="header-left">
+      <button class="back-button">
+        <span>‹</span>
+        <span>Back</span>
+      </button>
+    </div>
+    <div class="header-center">
+      <div class="contact-avatar">P</div>
+      <div class="contact-name">
+        Partner Success Agent
+        <span class="verified-badge">✓</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="header-icon" title="FaceTime Video">📹</button>
+      <button class="header-icon" title="FaceTime Audio">📞</button>
+    </div>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="messages-container" id="messagesContainer">
+    <div class="empty-state">Start a conversation by typing a message below</div>
+  </div>
+
+  <!-- Input Container -->
+  <div class="input-container">
+    <div class="input-actions-left">
+      <button class="input-icon" title="Add attachment">+</button>
+    </div>
+    <div class="input-wrapper">
+      <textarea
+        class="message-input"
+        id="messageInput"
+        placeholder="iMessage"
+        rows="1"
+      ></textarea>
+    </div>
+    <button class="send-button" id="sendButton" disabled>
+      <span>↑</span>
+    </button>
+    <div class="input-actions-right hidden" id="inputActionsRight">
+      <button class="input-icon" title="Apps">⊞</button>
+      <button class="input-icon" title="Camera">📷</button>
+      <button class="input-icon" title="Voice message">🎤</button>
+    </div>
+  </div>
+
+  <!-- OAuth Overlay -->
+  <div id="oauth-overlay" class="oauth-overlay hidden">
+    <div class="safari-modal">
+      <div class="safari-chrome">
+        <div class="safari-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="safari-url">
+          <span class="safari-lock">🔒</span>
+          <span class="safari-url-text" id="safari-url-text">login.salesforce.com</span>
+        </div>
+      </div>
+      <div class="safari-body">
+        <div class="safari-logo" id="safari-logo">☁️</div>
+        <h2 class="safari-title">"Partner Success Agent" wants to access your account</h2>
+        <p class="safari-desc">This will allow the app to read your deals and sync data.</p>
+        <div class="safari-buttons">
+          <button class="safari-allow" onclick="completeOAuth()">Allow</button>
+          <button class="safari-deny" onclick="cancelOAuth()">Don't Allow</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data
+    const OPPORTUNITIES = [
+      { id: 1, name: 'Acme Corp Expansion', account: 'Daimler AG', amount: 450000, stage: 'Approved', source: 'salesforce', closeDate: '2026-07-15' },
+      { id: 2, name: 'TechVentures Migration', account: 'Daimler AG', amount: 120000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-07-30' },
+      { id: 3, name: 'Meridian Upsell', account: 'Daimler AG', amount: 280000, stage: 'Submitted', source: 'salesforce', closeDate: '2026-08-15' },
+      { id: 4, name: 'NovaStar Labs Renewal', account: 'Elysium Motors', amount: 340000, stage: 'Approved', source: 'copper', closeDate: '2026-09-15' },
+      { id: 5, name: 'Pinnacle Financial New', account: 'Elysium Motors', amount: 95000, stage: 'Discovery', source: 'hubspot', closeDate: '2026-10-30' },
+      { id: 6, name: 'Fleet Purchase Program', account: 'Landmark Cars', amount: 2450000, stage: 'Proposal', source: 'salesforce', closeDate: '2026-09-30' },
+      { id: 7, name: 'EV Expansion Initiative', account: 'Elysium Motors', amount: 890000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-10-15' },
+      { id: 8, name: 'Luxury Model Negotiation', account: 'Daimler AG', amount: 620000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-08-30' },
+      { id: 9, name: 'Eco-Friendly Fleet', account: 'Daimler AG', amount: 175000, stage: 'Discovery', source: 'copper', closeDate: '2026-11-15' },
+      { id: 10, name: 'Smart City Partnership', account: 'T&T Motors', amount: 1200000, stage: 'Proposal', source: 'hubspot', closeDate: '2026-09-15' },
+      { id: 11, name: 'Autonomous Delivery Pilot', account: 'Landmark Cars', amount: 560000, stage: 'Under Review', source: 'salesforce', closeDate: '2026-08-20' },
+      { id: 12, name: 'Premium Service Package', account: 'T&T Motors', amount: 88000, stage: 'Approved', source: 'copper', closeDate: '2026-07-20' },
+      { id: 13, name: 'Year End Clearance', account: 'Daimler AG', amount: 10000, stage: 'Negotiation', source: 'salesforce', closeDate: '2026-06-30' },
+      { id: 14, name: 'Luxury EV Promo', account: 'Elysium Motors', amount: 420000, stage: 'Submitted', source: 'hubspot', closeDate: '2026-08-10' },
+      { id: 15, name: 'Regional Dealer Network', account: 'Landmark Cars', amount: 780000, stage: 'Discovery', source: 'salesforce', closeDate: '2026-12-01' },
+      { id: 16, name: 'Connected Car Services', account: 'T&T Motors', amount: 310000, stage: 'Proposal', source: 'copper', closeDate: '2026-09-30' },
+      { id: 17, name: 'Hybrid Fleet Transition', account: 'Daimler AG', amount: 950000, stage: 'Approved', source: 'hubspot', closeDate: '2026-10-01' },
+      { id: 18, name: 'Parts Distribution Deal', account: 'Landmark Cars', amount: 145000, stage: 'Under Review', source: 'hubspot', closeDate: '2026-08-25' }
+    ];
+
+    // State
+    let conversationState = 'setup-welcome';
+    let browsePageIndex = 0;
+    let selectedDeal = null;
+    const ITEMS_PER_PAGE = 5;
+    let setupData = {
+      selectedCRMs: [],
+      currentCRMIndex: 0,
+      userName: ''
+    };
+
+    // Elements
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const inputActionsRight = document.getElementById('inputActionsRight');
+
+    // Auto-resize textarea
+    messageInput.addEventListener('input', () => {
+      messageInput.style.height = 'auto';
+      messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+      sendButton.disabled = !messageInput.value.trim();
+    });
+
+    // Send message on Enter (Shift+Enter for new line)
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (messageInput.value.trim()) {
+          sendMessage();
+        }
+      }
+    });
+
+    // Send button click
+    sendButton.addEventListener('click', sendMessage);
+
+    // Message handling
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, 'outgoing');
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      sendButton.disabled = true;
+
+      // Show typing indicator
+      setTimeout(() => {
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          handleUserInput(text.toLowerCase());
+        }, 1000 + Math.random() * 1000);
+      }, 300);
+    }
+
+    function addMessage(content, type = 'incoming', options = {}) {
+      const emptyState = messagesContainer.querySelector('.empty-state');
+      if (emptyState) {
+        emptyState.remove();
+      }
+
+      // Add timestamp if first message or significant time gap
+      if (messagesContainer.children.length === 0 || messagesContainer.children.length === 1) {
+        const timestamp = document.createElement('div');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = formatTimestamp(new Date());
+        messagesContainer.appendChild(timestamp);
+      }
+
+      const messageGroup = document.createElement('div');
+      messageGroup.className = `message-group ${type}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = `message-bubble ${type}`;
+
+      // Support HTML content for links
+      if (options.isHTML) {
+        bubble.innerHTML = content;
+      } else {
+        bubble.innerHTML = content;
+      }
+
+      messageGroup.appendChild(bubble);
+
+      if (type === 'outgoing') {
+        const status = document.createElement('div');
+        status.className = 'delivery-status';
+        status.textContent = 'Delivered';
+        messageGroup.appendChild(status);
+      }
+
+      messagesContainer.appendChild(messageGroup);
+      scrollToBottom();
+    }
+
+    function showTypingIndicator() {
+      const messageGroup = document.createElement('div');
+      messageGroup.className = 'message-group incoming';
+      messageGroup.id = 'typingIndicator';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble incoming typing';
+      bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+      messageGroup.appendChild(bubble);
+      messagesContainer.appendChild(messageGroup);
+      scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function formatTimestamp(date) {
+      const now = new Date();
+      const isToday = date.toDateString() === now.toDateString();
+      const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      return isToday ? `Today ${timeStr}` : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount);
+    }
+
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function getCRMEmoji(source) {
+      const map = { salesforce: '☁️', hubspot: '🔶', copper: '🔸' };
+      return map[source] || '📊';
+    }
+
+    // Conversation logic
+    function handleUserInput(input) {
+      // Setup flow states
+      if (conversationState === 'setup-welcome') {
+        conversationState = 'setup-crm-select';
+        showTypingThenRespond(() => {
+          addMessage("Welcome! I'm your Partner Success Agent. Let's connect your CRMs so I can help manage your deals.\n\nWhich CRMs do you use?\n1️⃣ Salesforce\n2️⃣ HubSpot\n3️⃣ Copper\n4️⃣ Multiple (tell me which)", 'incoming');
+        });
+        return;
+      }
+
+      if (conversationState === 'setup-crm-select') {
+        const crms = parseCRMSelection(input);
+        if (crms.length === 0) {
+          showTypingThenRespond(() => {
+            addMessage("I didn't catch that. Reply 1, 2, 3, or 4:", 'incoming');
+          });
+          return;
+        }
+        setupData.selectedCRMs = crms;
+        setupData.currentCRMIndex = 0;
+        conversationState = 'setup-oauth';
+        promptOAuthLink(crms[0]);
+        return;
+      }
+
+      if (conversationState === 'setup-oauth') {
+        // User typed instead of tapping — guide them
+        if (input.toLowerCase() === 'skip' || input.toLowerCase() === 'later') {
+          finishSetupEarly();
+          return;
+        }
+        showTypingThenRespond(() => {
+          addMessage("Tap the link above to authorize, or reply 'skip' to connect later.", 'incoming');
+        });
+        return;
+      }
+
+      if (conversationState === 'setup-more-crms') {
+        if (/^y/i.test(input)) {
+          conversationState = 'setup-crm-select';
+          const remaining = ['salesforce','hubspot','copper'].filter(c => !setupData.selectedCRMs.includes(c));
+          let msg = "Which one?\n";
+          remaining.forEach((c, i) => { msg += `${i+1}️⃣ ${c.charAt(0).toUpperCase() + c.slice(1)}\n`; });
+          showTypingThenRespond(() => addMessage(msg.trim(), 'incoming'));
+        } else {
+          conversationState = 'setup-name';
+          showTypingThenRespond(() => addMessage("What should I call you?", 'incoming'));
+        }
+        return;
+      }
+
+      if (conversationState === 'setup-name') {
+        setupData.userName = input.trim();
+        conversationState = 'menu'; // TRANSITION TO EXISTING FLOW
+        showTypingThenRespond(() => {
+          addMessage(
+            `Perfect, ${setupData.userName}! You're ready to go.\n\nWhat would you like to do?\n1️⃣ See my recent deal\n2️⃣ View partner deals\n3️⃣ Check sync status\n4️⃣ Browse all opportunities`,
+            'incoming'
+          );
+        });
+        return;
+      }
+
+      // Initial greeting (legacy fallback - shouldn't be reached with new flow)
+      if (conversationState === 'initial' && (input.includes('hi') || input.includes('hello') || input.includes('hey') || input.includes('start'))) {
+        conversationState = 'menu';
+        addMessage(`Hi! I'm your Partner Success Agent. I can help you manage deals across your CRMs.\n\nWhat would you like to do?\n1️⃣ See my recent deal\n2️⃣ View partner deals\n3️⃣ Check sync status\n4️⃣ Browse all opportunities`);
+        return;
+      }
+
+      // Menu options
+      if (conversationState === 'menu' || conversationState === 'post-action') {
+        if (input === '1') {
+          showRecentDeal();
+        } else if (input === '2') {
+          showPartnerDeals();
+        } else if (input === '3') {
+          showSyncStatus();
+        } else if (input === '4' || input.includes('browse')) {
+          startBrowse();
+        } else {
+          addMessage(`Please reply with a number 1-4:\n1️⃣ Recent deal\n2️⃣ Partner deals\n3️⃣ Sync status\n4️⃣ Browse all`);
+        }
+        return;
+      }
+
+      // Move action
+      if (conversationState === 'showing-deal' && input === 'move') {
+        conversationState = 'post-action';
+        addMessage(`✅ Done! Moved to HubSpot CRM.\n\nAnything else? Reply 1-4 or type your question.`);
+        return;
+      }
+
+      // Browse pagination
+      if (conversationState === 'browsing') {
+        if (input === 'n' || input === 'next') {
+          browsePageIndex++;
+          showBrowsePage();
+        } else if (input === 'p' || input === 'prev' || input === 'previous') {
+          browsePageIndex = Math.max(0, browsePageIndex - 1);
+          showBrowsePage();
+        } else if (/^\d+(,\d+)*$/.test(input)) {
+          // Handle selection like "1,3,5"
+          const indices = input.split(',').map(n => parseInt(n.trim()) - 1);
+          const pageStart = browsePageIndex * ITEMS_PER_PAGE;
+          const selected = indices.map(i => OPPORTUNITIES[pageStart + i]).filter(Boolean);
+          if (selected.length > 0) {
+            conversationState = 'post-action';
+            const names = selected.map(o => `• ${o.name}`).join('\n');
+            addMessage(`✅ Selected ${selected.length} deal(s):\n${names}\n\nWhat would you like to do next? Reply 1-4.`);
+          } else {
+            addMessage(`Invalid selection. Reply with numbers (1-${Math.min(ITEMS_PER_PAGE, OPPORTUNITIES.length - pageStart)}), or N for next page.`);
+          }
+        } else {
+          addMessage(`Reply with numbers to select (e.g., 1,3,5), N for next, or P for previous.`);
+        }
+        return;
+      }
+
+      // Default fallback
+      addMessage(`I didn't quite catch that. Type "hi" to see what I can help with.`);
+    }
+
+    function showRecentDeal() {
+      conversationState = 'showing-deal';
+      selectedDeal = OPPORTUNITIES[12]; // Year End Clearance
+      const deal = selectedDeal;
+      addMessage(
+        `📋 <strong>${deal.name}</strong>\n\n` +
+        `Account: ${deal.account}\n` +
+        `Stage: ${deal.stage}\n` +
+        `Close: ${formatDate(deal.closeDate)}\n` +
+        `Amount: ${formatCurrency(deal.amount)}\n` +
+        `Source: ${getCRMEmoji(deal.source)} ${deal.source.charAt(0).toUpperCase() + deal.source.slice(1)}\n\n` +
+        `Reply MOVE to sync this to your CRM`
+      );
+    }
+
+    function showPartnerDeals() {
+      conversationState = 'post-action';
+      const partnerDeals = OPPORTUNITIES.filter(o => o.account === 'Elysium Motors').slice(0, 3);
+      let message = `🤝 <strong>Partner Deals (Elysium Motors)</strong>\n\n`;
+      partnerDeals.forEach((deal, i) => {
+        message += `${i + 1}. ${deal.name}\n   ${formatCurrency(deal.amount)} • ${deal.stage}\n   Close: ${formatDate(deal.closeDate)}\n\n`;
+      });
+      message += `Reply 1-4 for main menu.`;
+      addMessage(message);
+    }
+
+    function showSyncStatus() {
+      conversationState = 'post-action';
+      addMessage(
+        `📊 <strong>CRM Sync Status</strong>\n\n` +
+        `☁️ Salesforce: ✅ Synced (3 min ago)\n` +
+        `🔶 HubSpot: ✅ Synced (5 min ago)\n` +
+        `🔸 Copper: ⚠️ Pending (12 deals)\n\n` +
+        `All systems operational.\n\n` +
+        `Reply 1-4 for main menu.`
+      );
+    }
+
+    function startBrowse() {
+      conversationState = 'browsing';
+      browsePageIndex = 0;
+      showBrowsePage();
+    }
+
+    function showBrowsePage() {
+      const start = browsePageIndex * ITEMS_PER_PAGE;
+      const end = Math.min(start + ITEMS_PER_PAGE, OPPORTUNITIES.length);
+      const page = OPPORTUNITIES.slice(start, end);
+      const hasMore = end < OPPORTUNITIES.length;
+      const hasPrev = browsePageIndex > 0;
+
+      let message = `📋 <strong>Opportunities (${start + 1}-${end} of ${OPPORTUNITIES.length})</strong>\n\n`;
+      page.forEach((deal, i) => {
+        message += `${i + 1}. <strong>${deal.name}</strong>\n`;
+        message += `   ${deal.account} • ${formatCurrency(deal.amount)}\n`;
+        message += `   ${deal.stage} • ${formatDate(deal.closeDate)}\n`;
+        message += `   ${getCRMEmoji(deal.source)} ${deal.source}\n\n`;
+      });
+
+      message += `Reply numbers to select (e.g., 1,3,5)\n`;
+      if (hasMore) message += `N = next page`;
+      if (hasPrev) message += ` • P = previous`;
+
+      addMessage(message);
+    }
+
+    // Setup helper functions
+    function parseCRMSelection(input) {
+      const lower = input.toLowerCase();
+      const crms = [];
+      if (lower === '1' || /salesforce|sf\b/i.test(lower)) crms.push('salesforce');
+      else if (lower === '2' || /hubspot|hs\b/i.test(lower)) crms.push('hubspot');
+      else if (lower === '3' || /copper/i.test(lower)) crms.push('copper');
+      else if (lower === '4' || /all|multiple|both/i.test(lower)) return ['salesforce', 'hubspot', 'copper'];
+      // Handle combos: "1,2" or "1 and 3"
+      if (crms.length === 0) {
+        if (/1/.test(lower)) crms.push('salesforce');
+        if (/2/.test(lower)) crms.push('hubspot');
+        if (/3/.test(lower)) crms.push('copper');
+      }
+      return crms;
+    }
+
+    function promptOAuthLink(crm) {
+      const urls = { salesforce: 'login.salesforce.com', hubspot: 'app.hubspot.com', copper: 'app.copper.com' };
+      const names = { salesforce: 'Salesforce', hubspot: 'HubSpot', copper: 'Copper' };
+      showTypingThenRespond(() => {
+        addMessage(`To connect ${names[crm]}, tap this link to authorize:`, 'incoming');
+        // Add a second message with the tappable link
+        setTimeout(() => {
+          const linkHtml = `<a href="#" onclick="showOAuthOverlay('${crm}'); return false;" style="color:#007AFF;text-decoration:underline;">https://${urls[crm]}/oauth/authorize</a>`;
+          addMessage(linkHtml, 'incoming', { isHTML: true });
+        }, 400);
+      });
+    }
+
+    function showOAuthOverlay(crm) {
+      const urls = { salesforce: 'login.salesforce.com', hubspot: 'app.hubspot.com', copper: 'app.copper.com' };
+      const icons = { salesforce: '☁️', hubspot: '🔶', copper: '🔸' };
+      document.getElementById('safari-url-text').textContent = urls[crm];
+      document.getElementById('safari-logo').textContent = icons[crm];
+      document.getElementById('oauth-overlay').classList.remove('hidden');
+    }
+
+    function completeOAuth() {
+      document.getElementById('oauth-overlay').classList.add('hidden');
+      const crm = setupData.selectedCRMs[setupData.currentCRMIndex];
+      const names = { salesforce: 'Salesforce', hubspot: 'HubSpot', copper: 'Copper' };
+
+      showTypingThenRespond(() => {
+        addMessage(`✅ ${names[crm]} connected!`, 'incoming');
+        setupData.currentCRMIndex++;
+        if (setupData.currentCRMIndex < setupData.selectedCRMs.length) {
+          setTimeout(() => promptOAuthLink(setupData.selectedCRMs[setupData.currentCRMIndex]), 800);
+        } else {
+          conversationState = 'setup-more-crms';
+          setTimeout(() => {
+            showTypingThenRespond(() => addMessage("Any other CRMs to connect? (Y/N)", 'incoming'));
+          }, 800);
+        }
+      });
+    }
+
+    function cancelOAuth() {
+      document.getElementById('oauth-overlay').classList.add('hidden');
+      conversationState = 'setup-more-crms';
+      showTypingThenRespond(() => addMessage("No problem — you can connect later.\n\nAny other CRMs? (Y/N)", 'incoming'));
+    }
+
+    function finishSetupEarly() {
+      conversationState = 'menu';
+      showTypingThenRespond(() => {
+        addMessage("No problem! You can connect CRMs anytime.\n\nWhat would you like to do?\n1️⃣ See my recent deal\n2️⃣ View partner deals\n3️⃣ Check sync status\n4️⃣ Browse all opportunities", 'incoming');
+      });
+    }
+
+    function showTypingThenRespond(callback) {
+      showTypingIndicator();
+      setTimeout(() => {
+        hideTypingIndicator();
+        callback();
+      }, 1000 + Math.random() * 1000);
+    }
+  </script>
+</body>
+</html>
